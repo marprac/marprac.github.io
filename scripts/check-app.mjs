@@ -38,13 +38,15 @@ async function createApp(overrides = new Map()) {
   const copied = [];
   Object.defineProperty(window.navigator, "clipboard", { value: { writeText: async text => { copied.push(text); } } });
   const mounts = [];
+  const requests = [];
   window.__mountPdfReader = (element, document) => {
     element.dataset.documentId = document.id;
     mounts.push({ document, disposed: false });
     const mount = mounts.at(-1);
     return () => { mount.disposed = true; };
   };
-  window.fetch = async input => {
+  window.fetch = async (input, options) => {
+    requests.push({input, options});
     const url = new URL(input, window.document.baseURI);
     const relative = decodeURIComponent(url.pathname).replace(/^\//, "");
     let text;
@@ -59,7 +61,7 @@ async function createApp(overrides = new Map()) {
   };
   vendors.forEach(source => window.eval(source));
   await window.eval(`(async () => {\n${appSource}\n})()`);
-  return { dom, window, document: window.document, errors, copied, mounts, overrides };
+  return { dom, window, document: window.document, errors, copied, mounts, overrides, requests };
 }
 async function go(app, hash, predicate) {
   app.window.location.hash = hash;
@@ -89,10 +91,49 @@ await test("overview includes all six labs, six documents and accurate Java coun
   assert.equal(app.document.querySelectorAll("main .lab-card").length, labs.length);
   assert.equal(app.document.querySelectorAll("main .document-row").length, documents.length);
   const javaCount = labs.flatMap(lab => lab.files).filter(file => file.language === "java").length;
-  assert.equal(javaCount, 25);
-  assert.match(app.document.querySelector(".hero-meta").textContent, /25\s*JAVA FILES/);
+  assert.equal(javaCount, 27);
+  assert.match(app.document.querySelector(".hero-meta").textContent, /27\s*JAVA FILES/);
   assert.equal(app.document.querySelectorAll("#lab-nav a").length, labs.length);
   assert.equal(app.document.querySelector('[data-nav="home"]').getAttribute("aria-current"), "page");
+});
+
+await test("dashboard Maven guide preserves the commands and copies each platform's classpath syntax", async () => {
+  const guide = app.document.querySelector(".maven-guide");
+  assert(guide);
+  assert.match(guide.textContent,/JDK 21/);
+  assert.match(guide.textContent,/Maven 3/);
+  assert.match(guide.textContent,/containing pom\.xml/);
+  const posix = [
+    "mvn compile",
+    "mvn dependency:build-classpath -Dmdep.outputFile=target/classpath.txt",
+    'java -cp "target/classes:$(cat target/classpath.txt)" isp.keyagreement.AgentCommunicationECDH',
+  ].join("\n");
+  const powershell = [
+    "mvn compile",
+    'mvn dependency:build-classpath "-Dmdep.outputFile=target/classpath.txt"',
+    'java -cp "target/classes;$((Get-Content target/classpath.txt -Raw).Trim())" isp.keyagreement.AgentCommunicationECDH',
+  ].join("\n");
+  assert.equal(guide.querySelector('[data-maven-commands="posix"]').textContent,posix);
+  assert.equal(guide.querySelector('[data-maven-commands="powershell"]').textContent,powershell);
+  assert.match(guide.querySelector('a[href*="AgentCommunicationECDH"]').hash,/^#\/lab\/isp-keyagreement\?/);
+  assert.equal(guide.querySelector('a[href="#/lab/isp-midterms-ab"]').textContent,"Lab 6");
+  assert.match(guide.textContent,/isp\.signatures\.MidtermACommented/);
+  assert.match(guide.textContent,/isp\.signatures\.MidtermBCommented/);
+  guide.querySelector('[data-maven-copy="posix"]').click();
+  await delay();
+  assert.equal(app.copied.at(-1),posix);
+  guide.querySelector("details").open = true;
+  guide.querySelector('[data-maven-copy="powershell"]').click();
+  await delay();
+  assert.equal(app.copied.at(-1),powershell);
+});
+
+await test("collection requests revalidate cached files after a deployment", async () => {
+  for (const filename of ["./content/labs.json","./content/documents.json"]) {
+    const request = app.requests.find(request => request.input === filename);
+    assert(request,`Missing request for ${filename}`);
+    assert.equal(request.options?.cache,"no-cache");
+  }
 });
 
 for (const lab of labs) {

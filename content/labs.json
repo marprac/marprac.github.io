@@ -444,7 +444,7 @@
       "id": "isp-midterms-ab",
       "order": 6,
       "title": "Midterms A & B",
-      "description": "Read the original Midterm A and Midterm B implementations, covering authenticated key exchange and encrypted communication.",
+      "description": "Compare the original Midterm A and B implementations with copies explaining every line of their cryptographic protocols.",
       "topics": [
         "DH",
         "ECDH",
@@ -460,9 +460,9 @@
           "url": "content/labs/isp-midterms-ab/README.md",
           "type": "markdown",
           "language": "markdown",
-          "size": 1129,
-          "lines": 29,
-          "sha256": "68d5e7f01b51bd89f31ed5c76d8f120d1198c6998032e255c83040f170feb7fa"
+          "size": 1905,
+          "lines": 38,
+          "sha256": "e2cbf905fc4785495c9a28a401a6715dbdbcd6095122dbdb0a505fff007960e7"
         },
         {
           "path": "pom.xml",
@@ -485,6 +485,16 @@
           "sha256": "4e9143f9278c5984c5cddecd35bac2baaed253b7527a9e6a0ced1709965e3a48"
         },
         {
+          "path": "src/main/java/isp/signatures/MidtermACommented.java",
+          "url": "content/labs/isp-midterms-ab/src/main/java/isp/signatures/MidtermACommented.java",
+          "type": "code",
+          "language": "java",
+          "size": 32841,
+          "lines": 496,
+          "annotatedFrom": "src/main/java/isp/signatures/MidtermA.java",
+          "sha256": "2d95270f7b9f81530fe622ee8c51839b1c76f9969342c08932dd1dc6d9a92575"
+        },
+        {
           "path": "src/main/java/isp/signatures/MidtermB.java",
           "url": "content/labs/isp-midterms-ab/src/main/java/isp/signatures/MidtermB.java",
           "type": "code",
@@ -493,6 +503,16 @@
           "lines": 256,
           "originalSha256": "0010124746ebcc6a1a7f842bc893dc4591250babedff43164825efbc62460cd5",
           "sha256": "0010124746ebcc6a1a7f842bc893dc4591250babedff43164825efbc62460cd5"
+        },
+        {
+          "path": "src/main/java/isp/signatures/MidtermBCommented.java",
+          "url": "content/labs/isp-midterms-ab/src/main/java/isp/signatures/MidtermBCommented.java",
+          "type": "code",
+          "language": "java",
+          "size": 28696,
+          "lines": 405,
+          "annotatedFrom": "src/main/java/isp/signatures/MidtermB.java",
+          "sha256": "7482636f15ff97f92487f55b4cdb821000c48d7ec39e35481b1e6b48b5b52ab3"
         }
       ]
     }

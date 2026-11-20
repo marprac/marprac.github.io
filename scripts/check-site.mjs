@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import assert from "node:assert/strict";
-import { sameJavaCode } from "./java-tokens.mjs";
+import { sameJavaCode, sameJavaCodeIgnoringClassName } from "./java-tokens.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
@@ -36,9 +36,11 @@ assert(!labs.find((lab) => lab.id === "isp-keyagreement").files.some((file) => f
 const midtermsAB = labs.find((lab) => lab.id === "isp-midterms-ab");
 assert(midtermsAB && midtermsAB.order === 6);
 assert.deepEqual(midtermsAB.files.filter((file) => file.language === "java").map((file) => file.path),[
-  "src/main/java/isp/signatures/MidtermA.java", "src/main/java/isp/signatures/MidtermB.java",
+  "src/main/java/isp/signatures/MidtermA.java", "src/main/java/isp/signatures/MidtermACommented.java",
+  "src/main/java/isp/signatures/MidtermB.java", "src/main/java/isp/signatures/MidtermBCommented.java",
 ]);
-assert(midtermsAB.files.filter((file) => file.language === "java").every((file) => /^[a-f0-9]{64}$/.test(file.originalSha256)));
+assert.equal(midtermsAB.files.filter((file) => /^[a-f0-9]{64}$/.test(file.originalSha256)).length,2);
+assert.equal(midtermsAB.files.filter((file) => file.annotatedFrom).length,2);
 let originalCopies = 0;
 let annotatedCopies = 0;
 let javaCount = 0;
@@ -51,6 +53,11 @@ for (const lab of labs) {
     assert.equal(bytes.length,file.size,`Size mismatch: ${file.url}`);
     assert.equal(hash(bytes),file.sha256,`Hash mismatch: ${file.url}`);
     if (file.originalSha256) assert.equal(hash(bytes),file.originalSha256,`Original midterm was modified: ${file.url}`);
+    if (file.annotatedFrom) {
+      const original = lab.files.find((entry) => entry.path === file.annotatedFrom && entry.originalSha256);
+      assert(original,`Missing unchanged original for ${file.url}`);
+      assert(sameJavaCodeIgnoringClassName((await asset(original.url)).toString("utf8"),bytes.toString("utf8")),`Commented copy changed its program: ${file.url}`);
+    }
     if (file.lines !== undefined) {
       const text = bytes.toString("utf8");
       const lines = text ? text.split(/\r\n|\r|\n/).length - (/\r?\n$|\r$/.test(text) ? 1 : 0) : 0;
@@ -72,7 +79,7 @@ for (const lab of labs) {
     }
   }
 }
-assert.equal(javaCount,25);
+assert.equal(javaCount,27);
 const pdfSources = {
   "quick-reference":"Cryptography_Algorithms_Quick_Reference.pdf",
   "exam-study-script":"Cryptography_Complete_Exam_Study_Script.pdf",

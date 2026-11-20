@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { sameJavaCode } from './java-tokens.mjs';
+import { sameJavaCode, sameJavaCodeIgnoringClassName } from './java-tokens.mjs';
 
 const definitions = [
   {
@@ -68,7 +68,7 @@ const definitions = [
     id: 'isp-midterms-ab',
     order: 6,
     title: 'Midterms A & B',
-    description: 'Read the original Midterm A and Midterm B implementations, covering authenticated key exchange and encrypted communication.',
+    description: 'Compare the original Midterm A and B implementations with copies explaining every line of their cryptographic protocols.',
     topics: ['DH', 'ECDH', 'RSA signatures', 'AES-GCM', 'Password authentication'],
     exerciseCount: 2,
     repository: 'https://github.com/marprac/marprac.github.io/tree/main/content/labs/isp-midterms-ab',
@@ -77,11 +77,17 @@ const definitions = [
     localPaths: [
       'README.md',
       'src/main/java/isp/signatures/MidtermA.java',
+      'src/main/java/isp/signatures/MidtermACommented.java',
       'src/main/java/isp/signatures/MidtermB.java',
+      'src/main/java/isp/signatures/MidtermBCommented.java',
     ],
     originalHashes: {
       'src/main/java/isp/signatures/MidtermA.java': '4e9143f9278c5984c5cddecd35bac2baaed253b7527a9e6a0ced1709965e3a48',
       'src/main/java/isp/signatures/MidtermB.java': '0010124746ebcc6a1a7f842bc893dc4591250babedff43164825efbc62460cd5',
+    },
+    annotatedCopies: {
+      'src/main/java/isp/signatures/MidtermACommented.java': 'src/main/java/isp/signatures/MidtermA.java',
+      'src/main/java/isp/signatures/MidtermBCommented.java': 'src/main/java/isp/signatures/MidtermB.java',
     },
   },
 ];
@@ -253,7 +259,16 @@ async function main() {
       if (originalSha256 && sha256(bytes) !== originalSha256) {
         throw new Error(`Original file must remain byte-for-byte unchanged: ${filename}`);
       }
-      files.push({ path: relativePath, bytes, hash: sha256(bytes), ...describeFile(relativePath, bytes), ...(originalSha256 ? { originalSha256 } : {}) });
+      const annotatedFrom = definition.annotatedCopies?.[relativePath];
+      if (annotatedFrom) {
+        const originalFilename = path.join(projectRoot, 'content', 'labs', definition.id, annotatedFrom);
+        await requireRegularFile(originalFilename, projectRoot);
+        const original = await fs.readFile(originalFilename, 'utf8');
+        if (!sameJavaCodeIgnoringClassName(original, bytes.toString('utf8'))) {
+          throw new Error(`Commented copy differs from its original program: ${filename}`);
+        }
+      }
+      files.push({ path: relativePath, bytes, hash: sha256(bytes), ...describeFile(relativePath, bytes), ...(originalSha256 ? { originalSha256 } : {}), ...(annotatedFrom ? { annotatedFrom } : {}) });
     }
     files.sort((a, b) => comparePaths(a.path, b.path));
     prepared.push({ definition, files });
@@ -282,7 +297,7 @@ async function main() {
       copied += 1;
     }
     await removeStaleGeneratedFiles(destinationRoot, new Set(files.map((file) => file.path)));
-    const { sourceId, sourcePaths, localPaths, excludePrefixes, fileDescriptions, originalHashes, ...lab } = definition;
+    const { sourceId, sourcePaths, localPaths, excludePrefixes, fileDescriptions, originalHashes, annotatedCopies, ...lab } = definition;
     labs.push({ ...lab, repository: definition.repository || `https://github.com/lem-course/${sourceId || definition.id}`, files: manifestFiles });
   }
   const manifestPath = path.join(projectRoot, 'content', 'labs.json');

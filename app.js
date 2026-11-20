@@ -47,7 +47,7 @@ function markedText(text,query) {
 }
 async function readText(url) {
   if (!textCache.has(url)) {
-    const request = fetch(url).then((response) => {
+    const request = fetch(url,{cache:"no-cache"}).then((response) => {
       if (!response.ok) throw new Error(`Could not load file (${response.status}).`);
       return response.text();
     }).catch((error) => { textCache.delete(url); throw error; });
@@ -149,11 +149,32 @@ function documentRow(doc) {
 function collection(title, description, href, contents) {
   return `<section class="collection-section"><div class="section-heading"><div><h2>${title}</h2>${description ? `<p>${description}</p>` : ""}</div>${href ? `<a href="${href}">View all</a>` : ""}</div>${contents}</section>`;
 }
+function mavenGuide() {
+  const posixCommands = [
+    "mvn compile",
+    "mvn dependency:build-classpath -Dmdep.outputFile=target/classpath.txt",
+    'java -cp "target/classes:$(cat target/classpath.txt)" isp.keyagreement.AgentCommunicationECDH',
+  ].join("\n");
+  const powershellCommands = [
+    "mvn compile",
+    'mvn dependency:build-classpath "-Dmdep.outputFile=target/classpath.txt"',
+    'java -cp "target/classes;$((Get-Content target/classpath.txt -Raw).Trim())" isp.keyagreement.AgentCommunicationECDH',
+  ].join("\n");
+  return `<section class="maven-guide collection-section" aria-labelledby="maven-guide-title"><div class="section-heading"><div><h2 id="maven-guide-title">Compile &amp; run a lab</h2><p>Build the Java files, collect the dependencies, then run a class.</p></div></div><p>Install <strong>JDK 21</strong> and <strong>Maven 3</strong>. Open a terminal in the lab’s project folder containing <code>pom.xml</code>. The first build downloads the required dependencies.</p><div class="maven-command-block"><div class="maven-command-heading"><h3>macOS / Linux (Bash)</h3><button type="button" data-maven-copy="posix">Copy commands</button></div><pre><code data-maven-commands="posix">${escape(posixCommands)}</code></pre></div><details class="maven-powershell"><summary>Windows PowerShell commands</summary><p>Windows uses a semicolon between classpath entries. PowerShell reads the dependency list with <code>Get-Content</code>.</p><div class="maven-command-block"><div class="maven-command-heading"><h3>PowerShell</h3><button type="button" data-maven-copy="powershell">Copy commands</button></div><pre><code data-maven-commands="powershell">${escape(powershellCommands)}</code></pre></div></details><p class="maven-guide-note">This example runs <a href="#/lab/isp-keyagreement?file=src%2Fmain%2Fjava%2Fisp%2Fkeyagreement%2FAgentCommunicationECDH.java">AgentCommunicationECDH in Lab 4</a>. Replace the final class name to run another program in that project, and compile again after editing.</p><p class="maven-guide-note">For <a href="#/lab/isp-midterms-ab">Lab 6</a>, use <code>isp.signatures.MidtermA</code>, <code>isp.signatures.MidtermACommented</code>, <code>isp.signatures.MidtermB</code>, or <code>isp.signatures.MidtermBCommented</code> in the final command.</p></section>`;
+}
 function home() {
   navigation("home"); setHeading("Overview", "Cryptography collection");
   main.innerHTML = `<section class="hero"><div><p class="eyebrow">ISP / THE CRYPTOGRAPHY COLLECTION</p><h1>A clearer view of<br><span>cryptography.</span></h1><p class="hero-description">Your labs, lecture slides, and study scripts, together. Explore the code, revisit the theory, and make the connections.</p><div class="hero-actions"><a class="button primary" href="#/labs">${icon("code")}Explore the labs</a><a class="button subtle" href="#/scripts">${icon("book")}Read study scripts</a></div><div class="hero-meta"><span><strong>${String(labs.length).padStart(2,"0")}</strong> LABS</span><span><strong>${String(documents.length).padStart(2,"0")}</strong> DOCUMENTS</span><span><strong>${labs.flatMap((lab) => lab.files).filter((file) => file.language === "java").length}</strong> JAVA FILES</span></div></div><div class="hero-art" aria-hidden="true"><div class="cipher-row">7A 1F C4 09 E8</div><div class="cipher-row">D3 A9 2B 6E 01</div><div class="cipher-center">E<sub>k</sub>(m) = c</div><div class="cipher-row">B8 00 F2 5D 3C</div><div class="cipher-row">4E 6A 91 D0 7F</div></div></section>
+    ${mavenGuide()}
     ${collection("The lab collection", "From symmetric ciphers to key exchange.", "#/labs", `<div class="lab-grid">${labs.map(labCard).join("")}</div>`)}
     <div class="resource-columns">${collection("Lecture slides", "The theory behind the code.", "#/slides", `<div class="document-list">${documents.filter((doc) => doc.category === "slides").map(documentRow).join("")}</div>`)}${collection("Study scripts", "Keep the essentials close.", "#/scripts", `<div class="document-list">${documents.filter((doc) => doc.category === "script").map(documentRow).join("")}</div>`)}</div>`;
+  main.querySelectorAll("[data-maven-copy]").forEach((button) => {
+    button.addEventListener("click",async () => {
+      const commands = main.querySelector(`[data-maven-commands="${button.dataset.mavenCopy}"]`).textContent;
+      try { await navigator.clipboard.writeText(commands); toast("Maven commands copied."); }
+      catch { toast("Select the commands above to copy them."); }
+    });
+  });
 }
 function listLabs() {
   navigation("labs"); setHeading("Labs");
