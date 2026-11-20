@@ -1,4 +1,4 @@
-// Dependency-free structural and content checks. Run with: node scripts/check-site.mjs
+// Dependency-free structural and content checks. Run with: node archive/isp/scripts/check-site.mjs
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -66,7 +66,7 @@ for (const lab of labs) {
     assert(["README.md","pom.xml"].includes(file.path) || file.path.startsWith("src/"));
     assert(!file.path.includes(".."));
     if (file.language === "java") javaCount++;
-    const original = file.source ? path.resolve(root,"..",...file.source.split("/")) : null;
+    const original = file.source ? path.resolve(root,"../../..",...file.source.split("/")) : null;
     if (original && await exists(original)) {
       const sourceBytes = await fs.readFile(original);
       if (file.language === "java") {
@@ -111,7 +111,7 @@ for (const file of ["bootstrap.js","app.js","pdf-reader.js","scripts/sync-labs.m
   const result = spawnSync(process.execPath,["--input-type=module","--check"],{input:await read(file),encoding:"utf8"});
   assert.equal(result.status,0,`${file}: ${result.stderr}`);
 }
-const backup = await json("archive/personal/manifest.json");
-for (const file of backup.files) assert.equal(hash(await read(`archive/personal/${file.name}`)),file.sha256,`Portfolio backup changed: ${file.name}`);
+const backup = await json("../personal/manifest.json");
+for (const file of backup.files) assert.equal(hash(await read(`../personal/${file.name}`)),file.sha256,`Portfolio backup changed: ${file.name}`);
 console.log(`PASS: ${labs.length} labs, ${javaCount} Java files, 6 PDFs, ${pageCount} searchable pages, ${checkedAssets} local asset checks.`);
 console.log(`PASS: ${annotatedCopies} Java programs match their sources; ${originalCopies} original files verified byte for byte; portfolio archive intact; module syntax valid.`);

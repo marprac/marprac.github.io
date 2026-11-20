@@ -2,6 +2,6 @@
 * text=auto
 
 # Preserve imported course materials byte for byte.
-content/labs/** -text
-content/documents/*.pdf -text
+archive/isp/content/labs/** -text
+archive/isp/content/documents/*.pdf -text
 archive/personal/** -text

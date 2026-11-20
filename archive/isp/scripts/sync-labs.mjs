@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Copy the course repositories' published materials into this static site.
- * Usage: node scripts/sync-labs.mjs [--source-root <GitHub-directory>]
+ * Usage: node archive/isp/scripts/sync-labs.mjs [--source-root <GitHub-directory>]
  * Requires only Node.js 18+; no source repositories are changed.
  */
 import { createHash } from 'node:crypto';
@@ -71,7 +71,7 @@ const definitions = [
     description: 'Compare the original Midterm A and B implementations with copies explaining every line of their cryptographic protocols.',
     topics: ['DH', 'ECDH', 'RSA signatures', 'AES-GCM', 'Password authentication'],
     exerciseCount: 2,
-    repository: 'https://github.com/marprac/marprac.github.io/tree/main/content/labs/isp-midterms-ab',
+    repository: 'https://github.com/marprac/marprac.github.io/tree/main/archive/isp/content/labs/isp-midterms-ab',
     sourceId: 'isp-keyagreement',
     sourcePaths: ['pom.xml'],
     localPaths: [
@@ -201,7 +201,7 @@ async function removeStaleGeneratedFiles(directory, allowed, prefix = '') {
 
 async function main() {
   const projectRoot = await fs.realpath(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'));
-  let sourceRoot = path.resolve(projectRoot, '..');
+  let sourceRoot = path.resolve(projectRoot, '../../..');
   const args = process.argv.slice(2);
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];

@@ -3,7 +3,7 @@
   "use strict";
   const main = document.querySelector("main");
   if (window.location.protocol === "file:") {
-    main.innerHTML = '<div class="empty-state"><h1>Open the online study room</h1><p>The file browser and document reader need a website connection. Open the published site below, or serve this folder with a local web server.</p><a class="button primary" href="https://marprac.github.io/">Open ISP Study Room</a></div>';
+    main.innerHTML = '<div class="empty-state"><h1>Open the online study room</h1><p>The file browser and document reader need a website connection. Open the published site below, or serve this folder with a local web server.</p><a class="button primary" href="https://marprac.github.io/archive/isp/">Open ISP Study Room</a></div>';
     return;
   }
   import("./app.js?v=isp-6").catch(function () {
