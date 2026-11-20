@@ -7,6 +7,9 @@ let labs = [];
 let documents = [];
 let routeRevision = 0;
 let disposeReader = null;
+let collectionRequest = null;
+let collectionReady = false;
+let lastRoutedUrl = "";
 let toastTimer;
 let wrapCode = false;
 try { wrapCode = localStorage.getItem("isp-wrap-code") === "true"; } catch {}
@@ -64,8 +67,44 @@ document.addEventListener("keydown", (event) => {
 document.querySelector(".global-search").addEventListener("submit", (event) => {
   event.preventDefault();
   const query = searchInput.value.trim();
-  window.location.hash = query ? `/search?q=${encodeURIComponent(query)}` : "/";
+  navigate(query ? `#/search?q=${encodeURIComponent(query)}` : "#/");
 });
+
+// Handle our links directly: embedded previews and some browser hosts do not
+// dispatch hashchange consistently when they intercept fragment navigation.
+document.addEventListener("click", (event) => {
+  if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  const link = event.target.closest('a[href^="#/"]');
+  if (!link || link.target === "_blank" || link.hasAttribute("download")) return;
+  event.preventDefault();
+  navigate(link.getAttribute("href"));
+});
+function navigate(hash) {
+  if (window.location.hash !== hash) {
+    try { window.history.pushState(null,"",hash); }
+    catch { try { window.location.hash = hash; } catch {} }
+  }
+  return route(false,hash);
+}
+function onHistoryChange() {
+  if (lastRoutedUrl !== window.location.href) route();
+}
+window.addEventListener("hashchange",onHistoryChange);
+window.addEventListener("popstate",onHistoryChange);
+
+async function loadCollection() {
+  if (collectionReady) return;
+  if (!collectionRequest) {
+    collectionRequest = (async () => {
+      const [labData,documentData] = await Promise.all([readJSON("./content/labs.json"),readJSON("./content/documents.json")]);
+      labs = labData.labs;
+      documents = documentData.documents;
+      document.querySelector("#lab-nav").innerHTML = labs.map((lab) => `<a href="${labLink(lab)}" data-lab-nav="${escape(lab.id)}"><span class="lab-nav-number">${String(lab.order).padStart(2,"0")}</span><span>${escape(lab.title)}</span></a>`).join("");
+      collectionReady = true;
+    })().finally(() => { collectionRequest = null; });
+  }
+  return collectionRequest;
+}
 
 function navigation(section, labId = "") {
   document.querySelectorAll("[data-nav]").forEach((link) => {
@@ -267,12 +306,24 @@ function notFound(message = "This page is not in the collection.") {
   navigation(""); setHeading("Page not found");
   main.innerHTML = `<div class="empty-state"><h1>Page not found</h1><p>${escape(message)}</p><a class="button primary" href="#/">Back to overview</a></div>`;
 }
-async function route(initial = false) {
+async function route(initial = false, requestedHash = window.location.hash) {
   const revision = ++routeRevision;
+  lastRoutedUrl = window.location.href;
   if (disposeReader) { disposeReader(); disposeReader = null; }
   document.body.classList.remove("menu-open");
   document.querySelector(".mobile-menu").setAttribute("aria-expanded","false");
-  const raw = window.location.hash.replace(/^#/,"") || "/";
+  if (!collectionReady) {
+    main.innerHTML = '<div class="loading-state" role="status">Opening your study room…</div>';
+    try { await loadCollection(); }
+    catch {
+      if (revision !== routeRevision) return;
+      main.innerHTML = '<div class="empty-state"><h1>The collection could not be loaded</h1><p>Check your connection and try again. You can also select Labs, Lecture slides, or Study scripts to retry.</p><button class="button primary" type="button" data-action="retry">Try again</button></div>';
+      main.querySelector('[data-action="retry"]').addEventListener("click",() => route(false,requestedHash));
+      return;
+    }
+    if (revision !== routeRevision) return;
+  }
+  const raw = requestedHash.replace(/^#/,"") || "/";
   const split = raw.indexOf("?");
   const path = split < 0 ? raw : raw.slice(0,split);
   const params = new URLSearchParams(split < 0 ? "" : raw.slice(split + 1));
@@ -293,13 +344,4 @@ async function route(initial = false) {
   if (!initial && revision === routeRevision) { main.focus({preventScroll:true}); window.scrollTo({top:0,behavior:"instant"}); }
 }
 
-try {
-  const [labData,documentData] = await Promise.all([readJSON("./content/labs.json"),readJSON("./content/documents.json")]);
-  labs = labData.labs;
-  documents = documentData.documents;
-  document.querySelector("#lab-nav").innerHTML = labs.map((lab) => `<a href="${labLink(lab)}" data-lab-nav="${escape(lab.id)}"><span class="lab-nav-number">${String(lab.order).padStart(2,"0")}</span><span>${escape(lab.title)}</span></a>`).join("");
-  window.addEventListener("hashchange",() => route());
-  await route(true);
-} catch (error) {
-  main.innerHTML = `<div class="empty-state"><h1>The collection could not be loaded</h1><p>${escape(error.message)} Refresh the page to try again.</p></div>`;
-}
+await route(true);

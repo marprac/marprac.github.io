@@ -68,13 +68,13 @@ for (const doc of documents) {
   if (await exists(original)) { assert.equal(hash(bytes),hash(await fs.readFile(original))); originalCopies++; }
 }
 assert.equal(pageCount,181);
-for (const file of ["app.js","pdf-reader.js","styles.css","pdf-reader.css","favicon.svg","vendor/marked.umd.js","vendor/purify.min.js","vendor/highlight.min.js","vendor/highlight-theme.css","vendor/pdfjs/legacy/build/pdf.min.mjs","vendor/pdfjs/legacy/build/pdf.worker.min.mjs"]) await asset(file);
+for (const file of ["bootstrap.js","app.js","pdf-reader.js","styles.css","pdf-reader.css","favicon.svg","vendor/marked.umd.js","vendor/purify.min.js","vendor/highlight.min.js","vendor/highlight-theme.css","vendor/pdfjs/legacy/build/pdf.min.mjs","vendor/pdfjs/legacy/build/pdf.worker.min.mjs"]) await asset(file);
 const index = (await read("index.html")).toString();
 const styles = (await read("styles.css")).toString();
 assert(styles.includes(".app-shell") && styles.includes(".lab-workbench") && styles.includes(".code-line"),"Course styles are missing");
 for (const match of index.matchAll(/(?:src|href)="\.\/([^"]+)"/g)) await asset(match[1]);
 assert(!index.includes("archive/personal"),"Personal site must remain unlinked");
-for (const file of ["app.js","pdf-reader.js","scripts/sync-labs.mjs"]) {
+for (const file of ["bootstrap.js","app.js","pdf-reader.js","scripts/sync-labs.mjs"]) {
   const result = spawnSync(process.execPath,["--input-type=module","--check"],{input:await read(file),encoding:"utf8"});
   assert.equal(result.status,0,`${file}: ${result.stderr}`);
 }
