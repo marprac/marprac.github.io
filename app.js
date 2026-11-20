@@ -33,6 +33,18 @@ function escape(value) { return String(value).replace(/[&<>"']/g, (c) => ({ "&":
 function size(bytes) { return bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(bytes < 10240 ? 1 : 0)} KB`; }
 function labLink(lab, file, source = false) { return `#/lab/${encodeURIComponent(lab.id)}${file ? `?file=${encodeURIComponent(file.path)}${source ? "&view=source" : ""}` : ""}`; }
 function docLink(doc) { return `#/document/${encodeURIComponent(doc.id)}`; }
+function searchLink(query,scope = "all") { return `#/search?q=${encodeURIComponent(query)}${scope === "all" ? "" : `&scope=${scope}`}`; }
+function matchLink(lab,file,query,line,scope) { return `${labLink(lab,file,file.type === "markdown")}&line=${line}&q=${encodeURIComponent(query)}&scope=${scope}`; }
+function markedText(text,query) {
+  if (!query) return escape(text);
+  const folded = text.toLowerCase(), needle = query.toLowerCase();
+  let output = "", offset = 0, index;
+  while ((index = folded.indexOf(needle,offset)) !== -1) {
+    output += escape(text.slice(offset,index)) + `<mark class="search-term">${escape(text.slice(index,index + query.length))}</mark>`;
+    offset = index + query.length;
+  }
+  return output + escape(text.slice(offset));
+}
 async function readText(url) {
   if (!textCache.has(url)) {
     const request = fetch(url).then((response) => {
@@ -184,11 +196,42 @@ function highlightedLines(source, language) {
   lines.push(line);
   return lines.map((content) => `<span class="code-line"><span class="code-line-content">${content || " "}</span></span>`).join("");
 }
-function showCode(source,file) {
+function showCode(source,file,params) {
   const code = document.createElement("pre");
   code.className = `code-view${wrapCode ? " wrap" : ""}`;
   code.setAttribute("aria-label", `${file.path} source code`);
   code.innerHTML = highlightedLines(source,file.language);
+  const query = params.get("q")?.trim() || "";
+  const targetLine = Number(params.get("line"));
+  code.querySelectorAll(".code-line").forEach((line,index) => {
+    line.dataset.line = String(index + 1);
+    if (index + 1 === targetLine) {
+      line.classList.add("code-line-target");
+      line.setAttribute("aria-label",`Line ${index + 1}, search result`);
+    }
+    if (!query) return;
+    // A match can cross multiple syntax-highlighting spans. DOM ranges retain
+    // those spans and the exact source text, without inserting query HTML.
+    const content = line.querySelector(".code-line-content");
+    const folded = content.textContent.toLowerCase(), needle = query.toLowerCase();
+    const matches = [];
+    for (let start = folded.indexOf(needle); start !== -1; start = folded.indexOf(needle,start + needle.length)) matches.push(start);
+    for (const start of matches.reverse()) {
+      const walker = document.createTreeWalker(content,NodeFilter.SHOW_TEXT);
+      let node, offset = 0, first, last;
+      while ((node = walker.nextNode())) {
+        const end = offset + node.textContent.length;
+        if (!first && start < end) first = {node,offset:start - offset};
+        if (start + query.length <= end) { last = {node,offset:start + query.length - offset}; break; }
+        offset = end;
+      }
+      if (!first || !last) continue;
+      const range = document.createRange();
+      range.setStart(first.node,first.offset); range.setEnd(last.node,last.offset);
+      const mark = document.createElement("mark"); mark.className = "search-term";
+      mark.append(range.extractContents()); range.insertNode(mark);
+    }
+  });
   const scroll = document.createElement("div");
   scroll.className = "code-scroll"; scroll.tabIndex = 0;
   scroll.append(code);
@@ -231,7 +274,9 @@ async function showLab(id,params,revision) {
   const sourceView = file.type !== "markdown" || params.get("view") === "source";
   const isText = ["code","text","markdown"].includes(file.type);
   const related = documents.filter((doc) => doc.labIds.includes(lab.id));
-  main.innerHTML = `<a class="back-link" href="#/labs">All labs</a><div class="page-heading reader-heading"><div><p class="eyebrow">LAB ${String(lab.order).padStart(2,"0")} / ${escape(lab.id)}</p><h1>${escape(lab.title)}</h1><p>${escape(lab.description)}</p></div><a class="button" href="${escape(lab.repository)}" target="_blank" rel="noopener noreferrer">Source repository</a></div>
+  const query = params.get("q")?.trim() || "";
+  const backLink = query ? `<a class="back-link" href="${searchLink(query,params.get("scope") === "code" ? "code" : "all")}">Back to search results</a>` : '<a class="back-link" href="#/labs">All labs</a>';
+  main.innerHTML = `${backLink}<div class="page-heading reader-heading"><div><p class="eyebrow">LAB ${String(lab.order).padStart(2,"0")} / ${escape(lab.id)}</p><h1>${escape(lab.title)}</h1><p>${escape(lab.description)}</p></div><a class="button" href="${escape(lab.repository)}" target="_blank" rel="noopener noreferrer">Source repository</a></div>
     <div class="lab-workbench"><aside class="file-explorer" aria-label="Lab files"><div class="explorer-heading">FILES <span>${lab.files.length}</span></div><input class="file-search" type="search" placeholder="Filter files…" aria-label="Filter lab files"><nav class="file-tree" aria-label="Source files">${fileTree(lab,file.path)}</nav></aside><section class="file-panel" aria-label="File reader"><div class="file-toolbar"><div class="file-title">${icon(file.type === "markdown" ? "book" : "code")}<span>${escape(file.path.split("/").pop())}</span></div><div class="file-actions">${file.type === "markdown" ? `<a href="${labLink(lab,file,!sourceView)}">${sourceView ? "Preview" : "Source"}</a>` : ""}${isText ? `<button type="button" data-action="copy">Copy</button>${sourceView ? `<button type="button" data-action="wrap" aria-pressed="${wrapCode}">Wrap lines</button>` : ""}<a href="${escape(file.url)}" target="_blank" rel="noopener">Raw</a>` : ""}<a href="${escape(file.url)}" download>Download</a></div></div><div class="file-meta">${escape(file.path)} · ${size(file.size)}${file.lines ? ` · ${file.lines} lines` : ""}</div><div class="file-content"><div class="loading-state">Loading file…</div></div></section></div>
     ${collection("Read alongside this lab", "Related lecture slides and study scripts.", "", `<div class="document-list related-resources">${related.map(documentRow).join("")}</div>`)}`;
   main.querySelector(".file-search").addEventListener("input", (event) => { main.querySelector(".file-tree").innerHTML = fileTree(lab,file.path,event.target.value); });
@@ -243,7 +288,7 @@ async function showLab(id,params,revision) {
   try {
     const source = await readText(file.url);
     if (revision !== routeRevision) return;
-    content.replaceChildren(sourceView ? showCode(source,file) : renderMarkdown(source,lab,file));
+    content.replaceChildren(sourceView ? showCode(source,file,params) : renderMarkdown(source,lab,file));
     main.querySelector('[data-action="copy"]').addEventListener("click",async (event) => {
       try { await navigator.clipboard.writeText(source); event.target.textContent = "Copied"; toast("File copied to clipboard."); }
       catch { toast("Copy is unavailable here. Use Raw to select and copy the original text."); }
@@ -267,40 +312,53 @@ function showDocument(id) {
   main.innerHTML = `<a class="back-link" href="#/${category}">All ${label.toLowerCase()}</a>${heading(doc.category === "slides" ? "LECTURE SLIDES" : "STUDY SCRIPT",doc.title,doc.description)}<div class="document-reader"></div>${collection("Related labs", "Connect the theory to the code.", "#/labs", `<div class="lab-grid">${labs.filter((lab) => doc.labIds.includes(lab.id)).map(labCard).join("")}</div>`)}`;
   disposeReader = mountPdfReader(main.querySelector(".document-reader"),doc);
 }
-async function search(query,revision) {
-  navigation(""); setHeading("Search"); searchInput.value = query;
-  main.innerHTML = `${heading("SEARCH THE COLLECTION",query ? `Results for “${query}”` : "Find something to study.","Search lab names, source code, READMEs, and every page of the documents.")}<div class="search-results" aria-live="polite"><div class="loading-state">Searching the collection…</div></div>`;
+async function search(query,revision,requestedScope) {
+  const scope = ["code","documents"].includes(requestedScope) ? requestedScope : "all";
+  navigation("search"); setHeading("Search"); searchInput.value = query;
+  main.innerHTML = `${heading("GLOBAL SEARCH","Search the collection","Find methods, algorithms, comments, and exact code across all four labs, alongside READMEs, slides, and study scripts.")}<form class="search-page-form" role="search" aria-label="Search the entire collection"><label class="sr-only" for="collection-query">Search code and course materials</label><span>${icon("search")}</span><input id="collection-query" type="search" value="${escape(query)}" placeholder="Try Cipher.getInstance, HMAC, or Diffie-Hellman" autocomplete="off"><button class="button primary" type="submit">Search</button></form><nav class="search-scopes" aria-label="Search scope">${[["all","Everything"],["code","Code"],["documents","Documents"]].map(([value,label]) => `<a href="${searchLink(query,value)}" data-search-scope="${value}"${value === scope ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav><div class="search-results" aria-live="polite" aria-busy="true"><div class="loading-state">Searching the collection…</div></div>`;
+  main.querySelector(".search-page-form").addEventListener("submit",(event) => {
+    event.preventDefault(); navigate(searchLink(main.querySelector("#collection-query").value.trim(),scope));
+  });
   const results = [];
-  const needle = query.toLocaleLowerCase();
-  if (!needle) { main.querySelector(".search-results").innerHTML = '<p class="search-summary">Enter a term in the search field, then press Enter.</p>'; return; }
+  const needle = query.toLowerCase();
+  if (!needle) { const list = main.querySelector(".search-results"); list.setAttribute("aria-busy","false"); list.innerHTML = '<p class="search-summary">Search every lab at once. Enter a code fragment, class name, method, or topic, then select Search.</p>'; return; }
   let unavailable = 0;
   const work = [];
-  for (const lab of labs) {
-    if (`${lab.title} ${lab.description} ${lab.topics.join(" ")}`.toLocaleLowerCase().includes(needle)) results.push({kind:`LAB ${lab.order}`,title:lab.title,description:lab.description,url:labLink(lab),order:lab.order});
+  for (const lab of scope === "documents" ? [] : labs) {
+    if (scope === "all" && `${lab.title} ${lab.description} ${lab.topics.join(" ")}`.toLowerCase().includes(needle)) results.push({type:"lab",kind:`LAB ${lab.order}`,title:lab.title,description:lab.description,url:labLink(lab),order:20});
     for (const file of lab.files) {
       if (!["code","markdown","text"].includes(file.type)) continue;
+      if (scope === "code" && file.type !== "code") continue;
       work.push((async () => {
         const source = await readText(file.url);
-        const found = source.toLocaleLowerCase().indexOf(needle);
-        if (found !== -1 || file.path.toLocaleLowerCase().includes(needle)) {
-          const line = found < 0 ? 0 : source.slice(0,found).split("\n").length;
-          const excerpt = found < 0 ? "" : source.slice(Math.max(0,source.lastIndexOf("\n",found) + 1),source.indexOf("\n",found) === -1 ? source.length : source.indexOf("\n",found)).trim().slice(0,220);
-          results.push({kind:`FILE / ${lab.title}`,title:file.path.split("/").pop(),description:`${file.path}${line ? ` · line ${line}` : ""}`,excerpt,url:labLink(lab,file),order:10 + lab.order});
+        const matches = [];
+        source.replace(/\r\n?/g,"\n").split("\n").forEach((text,index) => {
+          const at = text.toLowerCase().indexOf(needle);
+          if (at < 0) return;
+          const start = Math.max(0,at - 60), end = Math.min(text.length,at + query.length + 160);
+          matches.push({line:index + 1,text:`${start ? "…" : ""}${text.slice(start,end)}${end < text.length ? "…" : ""}`,url:matchLink(lab,file,query,index + 1,scope)});
+        });
+        if (matches.length || file.path.toLowerCase().includes(needle)) {
+          const type = file.type === "code" ? "code" : "readme";
+          results.push({type,kind:`FILE / ${type === "code" ? "CODE" : "README"} / ${lab.title}`,title:file.path.split("/").pop(),description:`${file.path}${matches.length ? ` · ${matches.length} matching ${matches.length === 1 ? "line" : "lines"}` : " · filename match"}`,matches,url:matches[0]?.url || labLink(lab,file),order:type === "code" ? 1 : 5});
         }
       })());
     }
   }
-  for (const doc of documents) work.push((async () => {
+  for (const doc of scope === "code" ? [] : documents) work.push((async () => {
     const text = await readJSON(doc.textUrl);
     const pages = text.pages.map((page,index) => page.toLocaleLowerCase().includes(needle) ? index + 1 : 0).filter(Boolean);
-    if (pages.length || `${doc.title} ${doc.description}`.toLocaleLowerCase().includes(needle)) results.push({kind:doc.category === "slides" ? "LECTURE SLIDES" : "STUDY SCRIPT",title:doc.title,description:pages.length ? `Found on ${pages.length} ${pages.length === 1 ? "page" : "pages"}: ${pages.slice(0,8).join(", ")}${pages.length > 8 ? ", …" : ""}` : doc.description,url:docLink(doc),order:5});
+    if (pages.length || `${doc.title} ${doc.description}`.toLowerCase().includes(needle)) results.push({type:"document",kind:doc.category === "slides" ? "LECTURE SLIDES" : "STUDY SCRIPT",title:doc.title,description:pages.length ? `Found on ${pages.length} ${pages.length === 1 ? "page" : "pages"}: ${pages.slice(0,8).join(", ")}${pages.length > 8 ? ", …" : ""}` : doc.description,url:docLink(doc),order:10});
   })());
   const outcomes = await Promise.allSettled(work);
   unavailable = outcomes.filter((result) => result.status === "rejected").length;
   if (revision !== routeRevision) return;
   results.sort((a,b) => a.order - b.order || a.title.localeCompare(b.title));
   const list = main.querySelector(".search-results");
-  list.innerHTML = `<p class="search-summary">${results.length} ${results.length === 1 ? "result" : "results"}${unavailable ? ` · ${unavailable} files could not be searched` : ""}</p>${results.length ? results.map((result) => `<a class="search-result" href="${result.url}"><small>${escape(result.kind)}</small><h2>${escape(result.title)}</h2><p>${escape(result.description)}</p>${result.excerpt ? `<p class="search-excerpt">${escape(result.excerpt)}</p>` : ""}</a>`).join("") : '<div class="empty-state"><h2>No matches yet</h2><p>Try a topic such as AES, HMAC, RSA, or Diffie-Hellman.</p></div>'}`;
+  const codeLines = results.filter((result) => result.type === "code").reduce((sum,result) => sum + result.matches.length,0);
+  function snippet(match) { return `<a class="search-excerpt" href="${match.url}" aria-label="Open matching line ${match.line}"><span class="search-line-number">line ${match.line}</span><code>${markedText(match.text,query)}</code></a>`; }
+  list.setAttribute("aria-busy","false");
+  list.innerHTML = `<p class="search-summary">${results.length} ${results.length === 1 ? "result" : "results"}${codeLines ? ` · ${codeLines} matching code ${codeLines === 1 ? "line" : "lines"}` : ""}${unavailable ? ` · ${unavailable} files could not be searched` : ""}</p>${results.length ? results.map((result) => `<article class="search-result" data-result-type="${result.type}"><small>${escape(result.kind)}</small><h2><a href="${result.url}">${markedText(result.title,query)}</a></h2><p>${escape(result.description)}</p>${result.matches?.length ? `<div class="search-snippets">${result.matches.slice(0,3).map(snippet).join("")}${result.matches.length > 3 ? `<details class="search-more"><summary>Show ${result.matches.length - 3} more matching ${result.matches.length === 4 ? "line" : "lines"}</summary>${result.matches.slice(3).map(snippet).join("")}</details>` : ""}</div>` : ""}</article>`).join("") : '<div class="empty-state"><h2>No matches yet</h2><p>Try a method such as getInstance, or an algorithm such as AES, HMAC, or RSA.</p></div>'}`;
 }
 function notFound(message = "This page is not in the collection.") {
   navigation(""); setHeading("Page not found");
@@ -327,7 +385,7 @@ async function route(initial = false, requestedHash = window.location.hash) {
   const split = raw.indexOf("?");
   const path = split < 0 ? raw : raw.slice(0,split);
   const params = new URLSearchParams(split < 0 ? "" : raw.slice(split + 1));
-  if (path !== "/search") searchInput.value = "";
+  if (path !== "/search") searchInput.value = params.get("q") || "";
   try {
     const parts = path.split("/").filter(Boolean).map(decodeURIComponent);
     if (parts.length === 0) home();
@@ -336,12 +394,13 @@ async function route(initial = false, requestedHash = window.location.hash) {
     else if (parts.length === 1 && parts[0] === "scripts") listDocuments("script");
     else if (parts.length === 2 && parts[0] === "lab") await showLab(parts[1],params,revision);
     else if (parts.length === 2 && parts[0] === "document") showDocument(parts[1]);
-    else if (parts.length === 1 && parts[0] === "search") await search(params.get("q")?.trim() || "",revision);
+    else if (parts.length === 1 && parts[0] === "search") await search(params.get("q")?.trim() || "",revision,params.get("scope"));
     else notFound();
   } catch (error) {
     if (revision === routeRevision) { main.innerHTML = `<div class="empty-state"><h1>Could not open this page</h1><p>${escape(error.message)}</p><a class="button primary" href="#/">Back to overview</a></div>`; }
   }
   if (!initial && revision === routeRevision) { main.focus({preventScroll:true}); window.scrollTo({top:0,behavior:"instant"}); }
+  if (revision === routeRevision) main.querySelector(".code-line-target")?.scrollIntoView({block:"center",inline:"nearest",behavior:"auto"});
 }
 
 await route(true);

@@ -8,12 +8,12 @@
     <meta name="description" content="An ISP cryptography study library: labs, source code, lecture slides, and exam study scripts in one place.">
     <title>ISP Study Room · Cryptography</title>
     <link rel="icon" href="./favicon.svg?v=isp-1" type="image/svg+xml">
-    <link rel="stylesheet" href="./styles.css?v=isp-1">
+    <link rel="stylesheet" href="./styles.css?v=isp-3">
     <link rel="stylesheet" href="./pdf-reader.css">
     <script src="./vendor/marked.umd.js" defer></script>
     <script src="./vendor/purify.min.js" defer></script>
     <script src="./vendor/highlight.min.js" defer></script>
-    <script src="./bootstrap.js?v=isp-2" defer></script>
+    <script src="./bootstrap.js?v=isp-3" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -23,6 +23,7 @@
         <span class="nav-caption">YOUR WORKSPACE</span>
         <nav class="primary-nav">
           <a href="#/" data-nav="home"><span data-icon="grid"></span>Overview</a>
+          <a href="#/search" data-nav="search"><span data-icon="search"></span>Global search</a>
           <a href="#/labs" data-nav="labs"><span data-icon="code"></span>Labs<span class="nav-count">4</span></a>
           <a href="#/slides" data-nav="slides"><span data-icon="slides"></span>Lecture slides<span class="nav-count">4</span></a>
           <a href="#/scripts" data-nav="scripts"><span data-icon="book"></span>Study scripts<span class="nav-count">2</span></a>
@@ -34,7 +35,7 @@
         <header class="topbar">
           <button class="mobile-menu icon-button" type="button" aria-label="Toggle navigation" aria-expanded="false"><span data-icon="menu"></span></button>
           <div class="breadcrumbs"><span>ISP</span><span class="crumb-divider">/</span><span id="breadcrumb">Overview</span></div>
-          <form class="global-search" role="search"><span data-icon="search"></span><input id="global-search" type="search" autocomplete="off" aria-label="Search labs, files, and documents" placeholder="Search the collection…"><kbd>/</kbd></form>
+          <form class="global-search" role="search"><span data-icon="search"></span><input id="global-search" type="search" autocomplete="off" aria-label="Search inside code, labs, and documents" placeholder="Search code & documents…"><button type="submit">Search</button><kbd>/</kbd></form>
         </header>
         <main id="main" tabindex="-1"><div class="loading-state">Opening your study room…</div></main>
         <footer class="page-footer"><span>ISP Study Room</span><span>Four labs. One place to study.</span></footer>
