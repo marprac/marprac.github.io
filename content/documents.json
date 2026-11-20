@@ -1,0 +1,88 @@
+{
+  "documents": [
+    {
+      "id": "quick-reference",
+      "title": "Cryptography Algorithms at a Glance",
+      "description": "A compact reference to symmetric encryption, hashes, authentication, public-key cryptography, signatures and key derivation.",
+      "category": "script",
+      "url": "content/documents/quick-reference.pdf",
+      "textUrl": "content/documents/quick-reference.text.json",
+      "pages": 4,
+      "size": 77300,
+      "labIds": [
+        "isp-secrecy",
+        "isp-integrity",
+        "isp-ae-pke",
+        "isp-keyagreement"
+      ]
+    },
+    {
+      "id": "exam-study-script",
+      "title": "Complete Exam Study Script",
+      "description": "A complete revision guide following all four lecture decks, with formulas, worked explanations and oral-exam questions.",
+      "category": "script",
+      "url": "content/documents/exam-study-script.pdf",
+      "textUrl": "content/documents/exam-study-script.text.json",
+      "pages": 19,
+      "size": 124175,
+      "labIds": [
+        "isp-secrecy",
+        "isp-integrity",
+        "isp-ae-pke",
+        "isp-keyagreement"
+      ]
+    },
+    {
+      "id": "01-communication-secrecy",
+      "title": "Communication Secrecy",
+      "description": "Perfect secrecy, one-time pads, pseudorandom generators, stream ciphers, block ciphers and modes of operation.",
+      "category": "slides",
+      "url": "content/documents/01-communication-secrecy.pdf",
+      "textUrl": "content/documents/01-communication-secrecy.text.json",
+      "pages": 39,
+      "size": 340074,
+      "labIds": [
+        "isp-secrecy"
+      ]
+    },
+    {
+      "id": "02-integrity-authenticated-encryption",
+      "title": "Integrity & Authenticated Encryption",
+      "description": "Message authentication codes, ECBC-MAC, collision-resistant hashes, HMAC and authenticated encryption.",
+      "category": "slides",
+      "url": "content/documents/02-integrity-authenticated-encryption.pdf",
+      "textUrl": "content/documents/02-integrity-authenticated-encryption.text.json",
+      "pages": 43,
+      "size": 440172,
+      "labIds": [
+        "isp-integrity"
+      ]
+    },
+    {
+      "id": "03-authenticated-public-key-encryption",
+      "title": "Authenticated & Public-key Encryption",
+      "description": "Ciphertext integrity, chosen-ciphertext security, authenticated encryption, trapdoor functions, RSA and OAEP.",
+      "category": "slides",
+      "url": "content/documents/03-authenticated-public-key-encryption.pdf",
+      "textUrl": "content/documents/03-authenticated-public-key-encryption.text.json",
+      "pages": 39,
+      "size": 508150,
+      "labIds": [
+        "isp-ae-pke"
+      ]
+    },
+    {
+      "id": "04-key-exchange",
+      "title": "Key Exchange",
+      "description": "Trusted third parties, Diffie-Hellman, digital signatures, RSA-PSS and key derivation.",
+      "category": "slides",
+      "url": "content/documents/04-key-exchange.pdf",
+      "textUrl": "content/documents/04-key-exchange.text.json",
+      "pages": 37,
+      "size": 589906,
+      "labIds": [
+        "isp-keyagreement"
+      ]
+    }
+  ]
+}

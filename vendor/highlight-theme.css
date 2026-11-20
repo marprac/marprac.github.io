@@ -1,0 +1,9 @@
+.hljs-keyword,.hljs-selector-tag,.hljs-literal { color:#c1a4ed; }
+.hljs-title,.hljs-title.class_,.hljs-title.function_ { color:#93c9f4; }
+.hljs-string,.hljs-regexp,.hljs-addition { color:#b9d98c; }
+.hljs-comment,.hljs-quote { color:#8a9eae; font-style:italic; }
+.hljs-number,.hljs-symbol,.hljs-bullet { color:#efbd88; }
+.hljs-type,.hljs-built_in { color:#e6cd9a; }
+.hljs-meta,.hljs-attr,.hljs-attribute { color:#8ac8cb; }
+.hljs-variable,.hljs-params { color:#d9e3ec; }
+.hljs-deletion { color:#eea0a0; }

@@ -1,0 +1,17 @@
+[
+  {
+    "name": "marked",
+    "version": "18.2.1",
+    "file": "marked.umd.js"
+  },
+  {
+    "name": "dompurify",
+    "version": "3.4.18",
+    "file": "purify.min.js"
+  },
+  {
+    "name": "@highlightjs/cdn-assets",
+    "version": "11.12.0",
+    "file": "highlight.min.js"
+  }
+]

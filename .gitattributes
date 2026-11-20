@@ -1,2 +1,7 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Preserve imported course materials byte for byte.
+content/labs/** -text
+content/documents/*.pdf -text
+archive/personal/** -text

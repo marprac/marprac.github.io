@@ -1,0 +1,25 @@
+{
+  "originalCommit": "9142c654bc126ac5d566cfe1ed1f122689f94df8",
+  "files": [
+    {
+      "name": "index.html",
+      "sha256": "3865037e6fa7cfaf87f4d5c8874018a0cfc6d969120f08885d28e0762b731937"
+    },
+    {
+      "name": "styles.css",
+      "sha256": "a3ff80600fb2f033d5b9207a9920aa759ac8e18c9dd27b3e4b1d35dd3ad52492"
+    },
+    {
+      "name": "disclosures.js",
+      "sha256": "c2aa38d88d2e3bd1022d2c040f5966f5878e182a9c67ef5c067062995968b6e3"
+    },
+    {
+      "name": "favicon.svg",
+      "sha256": "3828f5cca2955abc4fa4a341009d41f379ed5e1f79854a3fdab38059d8ce8a0a"
+    },
+    {
+      "name": "README.md",
+      "sha256": "2b3055640a505057c07ddf506666933de269a05e74051a7776f78925c628a11a"
+    }
+  ]
+}
