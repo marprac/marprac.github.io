@@ -18,81 +18,101 @@
         {
           "path": "README.md",
           "url": "content/labs/isp-secrecy/README.md",
+          "source": "isp-secrecy/README.md",
           "type": "markdown",
           "language": "markdown",
           "size": 4662,
-          "lines": 75
+          "lines": 75,
+          "sha256": "7120d598d5a065759d8819468a2ee168557f42296fe2b5ee1f6f10006bc9690a"
         },
         {
           "path": "pom.xml",
           "url": "content/labs/isp-secrecy/pom.xml",
+          "source": "isp-secrecy/pom.xml",
           "type": "code",
           "language": "xml",
           "size": 1428,
-          "lines": 42
+          "lines": 42,
+          "sha256": "96401b0c4213d46efac2e52818291a8d2ca42c705b2420de1fde471fd46dbfad"
         },
         {
           "path": "src/main/java/isp/secrecy/A1AESInCBCMode.java",
           "url": "content/labs/isp-secrecy/src/main/java/isp/secrecy/A1AESInCBCMode.java",
+          "source": "isp-secrecy/src/main/java/isp/secrecy/A1AESInCBCMode.java",
           "type": "code",
           "language": "java",
-          "size": 4499,
-          "lines": 107
+          "size": 7912,
+          "lines": 145,
+          "sha256": "d4549e85e7947385e1f73146099b0146ff03be9be437a8796916ee6d6f5b3418"
         },
         {
           "path": "src/main/java/isp/secrecy/A2AESInCTRMode.java",
           "url": "content/labs/isp-secrecy/src/main/java/isp/secrecy/A2AESInCTRMode.java",
+          "source": "isp-secrecy/src/main/java/isp/secrecy/A2AESInCTRMode.java",
           "type": "code",
           "language": "java",
-          "size": 4669,
-          "lines": 112
+          "size": 8086,
+          "lines": 150,
+          "sha256": "22cf8969266fbada90552a79b83a85cd9aaf6b2a6dae5b7b70355c61cc72c555"
         },
         {
           "path": "src/main/java/isp/secrecy/A3ChaCha20.java",
           "url": "content/labs/isp-secrecy/src/main/java/isp/secrecy/A3ChaCha20.java",
+          "source": "isp-secrecy/src/main/java/isp/secrecy/A3ChaCha20.java",
           "type": "code",
           "language": "java",
-          "size": 5500,
-          "lines": 134
+          "size": 10757,
+          "lines": 189,
+          "sha256": "b67a00f057799926051b628f44e09934187699c5f3d545ce5d097ee934507640"
         },
         {
           "path": "src/main/java/isp/secrecy/A4ExhaustiveSearch.java",
           "url": "content/labs/isp-secrecy/src/main/java/isp/secrecy/A4ExhaustiveSearch.java",
+          "source": "isp-secrecy/src/main/java/isp/secrecy/A4ExhaustiveSearch.java",
           "type": "code",
           "language": "java",
           "size": 3965,
-          "lines": 106
+          "lines": 106,
+          "sha256": "6a2c5b9ec362edce597bca96804533c62ebf3369c4f834270f86770fb1013f9f"
         },
         {
           "path": "src/main/java/isp/secrecy/A5ActiveMITM.java",
           "url": "content/labs/isp-secrecy/src/main/java/isp/secrecy/A5ActiveMITM.java",
+          "source": "isp-secrecy/src/main/java/isp/secrecy/A5ActiveMITM.java",
           "type": "code",
           "language": "java",
-          "size": 6115,
-          "lines": 165
+          "size": 11051,
+          "lines": 217,
+          "sha256": "c668af4523287466505fd728a6d9251b2ed20d5ddc360bd341a1d56bde644bda"
         },
         {
           "path": "src/main/java/isp/secrecy/AgentCommunication.java",
           "url": "content/labs/isp-secrecy/src/main/java/isp/secrecy/AgentCommunication.java",
+          "source": "isp-secrecy/src/main/java/isp/secrecy/AgentCommunication.java",
           "type": "code",
           "language": "java",
-          "size": 1344,
-          "lines": 40
+          "size": 2604,
+          "lines": 56,
+          "sha256": "6f0d748f9d6a2d4edc2a6ddcd4612dea6f0b60c1a362ae9e0ec5f7cad183e187"
         },
         {
           "path": "src/main/java/isp/secrecy/Assigment1.zip",
           "url": "content/labs/isp-secrecy/src/main/java/isp/secrecy/Assigment1.zip",
+          "source": "isp-secrecy/src/main/java/isp/secrecy/Assigment1.zip",
           "type": "archive",
           "language": null,
-          "size": 8774
+          "size": 8774,
+          "sha256": "9a5f7f99493e8c2b4cedb7cb3fe7d1615c1813cfb5c8e3a6253197d78e067e10"
         },
         {
           "path": "src/main/java/isp/secrecy/SymmetricCipherExample.java",
           "url": "content/labs/isp-secrecy/src/main/java/isp/secrecy/SymmetricCipherExample.java",
+          "source": "isp-secrecy/src/main/java/isp/secrecy/SymmetricCipherExample.java",
           "type": "code",
           "language": "java",
-          "size": 2840,
-          "lines": 70
+          "size": 4597,
+          "lines": 90,
+          "sha256": "4b8b520c1b4df042000a34339140bd87432cd3a1985dce3963a198fd3dcb0deb"
         }
       ]
     },
@@ -112,42 +132,52 @@
         {
           "path": "README.md",
           "url": "content/labs/isp-integrity/README.md",
+          "source": "isp-integrity/README.md",
           "type": "markdown",
           "language": "markdown",
           "size": 3390,
-          "lines": 64
+          "lines": 64,
+          "sha256": "0c3b679a81046328b86e44a4fc7ce098db0115b6a08ff9bd5e967af8c96eb5c3"
         },
         {
           "path": "pom.xml",
           "url": "content/labs/isp-integrity/pom.xml",
+          "source": "isp-integrity/pom.xml",
           "type": "code",
           "language": "xml",
           "size": 1416,
-          "lines": 44
+          "lines": 44,
+          "sha256": "43ec0ab183350424ee827d358afb5f9992c449360edd8c905367e8ea3f31047b"
         },
         {
           "path": "src/main/java/isp/integrity/A1AgentCommunicationHMAC.java",
           "url": "content/labs/isp-integrity/src/main/java/isp/integrity/A1AgentCommunicationHMAC.java",
+          "source": "isp-integrity/src/main/java/isp/integrity/A1AgentCommunicationHMAC.java",
           "type": "code",
           "language": "java",
-          "size": 4044,
-          "lines": 105
+          "size": 8006,
+          "lines": 147,
+          "sha256": "bbfe95a59d58f4ac713ad22bb33605ccf0e18ec55e92b7fcc16d689679bf5599"
         },
         {
           "path": "src/main/java/isp/integrity/HMACExample.java",
           "url": "content/labs/isp-integrity/src/main/java/isp/integrity/HMACExample.java",
+          "source": "isp-integrity/src/main/java/isp/integrity/HMACExample.java",
           "type": "code",
           "language": "java",
-          "size": 3904,
-          "lines": 125
+          "size": 5341,
+          "lines": 141,
+          "sha256": "fcdacdbe57505612f7be057bebda43a2df3df0205b0f6d63d3cda004e8c6e29a"
         },
         {
           "path": "src/main/java/isp/integrity/MessageDigestExample.java",
           "url": "content/labs/isp-integrity/src/main/java/isp/integrity/MessageDigestExample.java",
+          "source": "isp-integrity/src/main/java/isp/integrity/MessageDigestExample.java",
           "type": "code",
           "language": "java",
           "size": 1145,
-          "lines": 35
+          "lines": 35,
+          "sha256": "95343f26e380761d89a7a85e2770265bdfe7365f782bbfea4115b67006941e59"
         }
       ]
     },
@@ -168,58 +198,72 @@
         {
           "path": "README.md",
           "url": "content/labs/isp-ae-pke/README.md",
+          "source": "isp-ae-pke/README.md",
           "type": "markdown",
           "language": "markdown",
           "size": 4659,
-          "lines": 78
+          "lines": 78,
+          "sha256": "78d9cc0ffc3f6cd463d8c122316b2c77531da8e3079dd9adbeb1208b5d84fb7a"
         },
         {
           "path": "pom.xml",
           "url": "content/labs/isp-ae-pke/pom.xml",
+          "source": "isp-ae-pke/pom.xml",
           "type": "code",
           "language": "xml",
           "size": 1393,
-          "lines": 42
+          "lines": 42,
+          "sha256": "a58c253004acf68100569e280c5eb9ced3bec8fc968d2b40f07ccee750de2b19"
         },
         {
           "path": "src/main/java/isp/A1AgentCommunicationGCM.java",
           "url": "content/labs/isp-ae-pke/src/main/java/isp/A1AgentCommunicationGCM.java",
+          "source": "isp-ae-pke/src/main/java/isp/A1AgentCommunicationGCM.java",
           "type": "code",
           "language": "java",
-          "size": 3866,
-          "lines": 95
+          "size": 7374,
+          "lines": 133,
+          "sha256": "d3a7d0da0848edcd2c0145d2805a0ef15bafa88500a689f53422c62b3e892e56"
         },
         {
           "path": "src/main/java/isp/A2AgentCommunicationPublicSpace.java",
           "url": "content/labs/isp-ae-pke/src/main/java/isp/A2AgentCommunicationPublicSpace.java",
+          "source": "isp-ae-pke/src/main/java/isp/A2AgentCommunicationPublicSpace.java",
           "type": "code",
           "language": "java",
-          "size": 6523,
-          "lines": 151
+          "size": 9359,
+          "lines": 180,
+          "sha256": "9a6676ebf25becdfb98f5cfcdeb8e2bd538fbda80634de1f4326cc79ce42edd4"
         },
         {
           "path": "src/main/java/isp/A3AgentCommunicationRSA.java",
           "url": "content/labs/isp-ae-pke/src/main/java/isp/A3AgentCommunicationRSA.java",
+          "source": "isp-ae-pke/src/main/java/isp/A3AgentCommunicationRSA.java",
           "type": "code",
           "language": "java",
-          "size": 2760,
-          "lines": 74
+          "size": 4337,
+          "lines": 91,
+          "sha256": "7b9815e2f804b922986b6e5acf179d7d995314b53100339888a9cefc0898e139"
         },
         {
           "path": "src/main/java/isp/GCMExample.java",
           "url": "content/labs/isp-ae-pke/src/main/java/isp/GCMExample.java",
+          "source": "isp-ae-pke/src/main/java/isp/GCMExample.java",
           "type": "code",
           "language": "java",
-          "size": 1921,
-          "lines": 52
+          "size": 2939,
+          "lines": 64,
+          "sha256": "a51bc9d4a2f6ab7320343811b1c6a60538a50b577c757a66922ba2bfe986a161"
         },
         {
           "path": "src/main/java/isp/RSAExample.java",
           "url": "content/labs/isp-ae-pke/src/main/java/isp/RSAExample.java",
+          "source": "isp-ae-pke/src/main/java/isp/RSAExample.java",
           "type": "code",
           "language": "java",
-          "size": 2364,
-          "lines": 55
+          "size": 3360,
+          "lines": 67,
+          "sha256": "c78e60542ef0c5a20a1aeb6bf01b508bf159d2b4ba1e58a1f7019c54193c7c6e"
         }
       ]
     },
@@ -241,74 +285,214 @@
         {
           "path": "README.md",
           "url": "content/labs/isp-keyagreement/README.md",
+          "source": "isp-keyagreement/README.md",
           "type": "markdown",
           "language": "markdown",
           "size": 5176,
-          "lines": 90
+          "lines": 90,
+          "sha256": "aac0e3c61aac5ff69a2c4c5e9bed4640128bb900756c9530d7f9aaf96ff7d7ed"
         },
         {
           "path": "pom.xml",
           "url": "content/labs/isp-keyagreement/pom.xml",
+          "source": "isp-keyagreement/pom.xml",
           "type": "code",
           "language": "xml",
           "size": 1464,
-          "lines": 45
+          "lines": 45,
+          "sha256": "f83ca250b26827d8b3a484f41b1b30c7c5eeb44110c5a0773bca83b98139934b"
         },
         {
           "path": "src/main/java/isp/keyagreement/A1AgentCommunicationKeyExchange.java",
           "url": "content/labs/isp-keyagreement/src/main/java/isp/keyagreement/A1AgentCommunicationKeyExchange.java",
+          "source": "isp-keyagreement/src/main/java/isp/keyagreement/A1AgentCommunicationKeyExchange.java",
           "type": "code",
           "language": "java",
-          "size": 3383,
-          "lines": 91
+          "size": 6801,
+          "lines": 132,
+          "sha256": "8e43a3d3fdd2b8a4aca6130907886ae0e0dc06b2218087101b5217147b876299"
         },
         {
           "path": "src/main/java/isp/keyagreement/AgentCommunicationDH.java",
           "url": "content/labs/isp-keyagreement/src/main/java/isp/keyagreement/AgentCommunicationDH.java",
+          "source": "isp-keyagreement/src/main/java/isp/keyagreement/AgentCommunicationDH.java",
           "type": "code",
           "language": "java",
-          "size": 4624,
-          "lines": 112
+          "size": 9677,
+          "lines": 168,
+          "sha256": "5fa93c746772ec3c5f8ce9aaba4675534075539ce3393c7d1530ceba558cf86d"
         },
         {
           "path": "src/main/java/isp/keyagreement/AgentCommunicationECDH.java",
           "url": "content/labs/isp-keyagreement/src/main/java/isp/keyagreement/AgentCommunicationECDH.java",
+          "source": "isp-keyagreement/src/main/java/isp/keyagreement/AgentCommunicationECDH.java",
           "type": "code",
           "language": "java",
-          "size": 4230,
-          "lines": 103
+          "size": 8704,
+          "lines": 153,
+          "sha256": "3c49021229b9298792f93a31fa4b3ceedb0a02a64463e5718a45029c77aaf800"
         },
         {
           "path": "src/main/java/isp/signatures/A2AgentCommunicationSignature.java",
           "url": "content/labs/isp-keyagreement/src/main/java/isp/signatures/A2AgentCommunicationSignature.java",
+          "source": "isp-keyagreement/src/main/java/isp/signatures/A2AgentCommunicationSignature.java",
           "type": "code",
           "language": "java",
-          "size": 4344,
-          "lines": 111
+          "size": 9102,
+          "lines": 167,
+          "sha256": "274deabfd98bbaf6d57f1e1183cffaa30e5e08a0407cd118fa699397b8b04070"
         },
         {
           "path": "src/main/java/isp/signatures/KeyDerivation.java",
           "url": "content/labs/isp-keyagreement/src/main/java/isp/signatures/KeyDerivation.java",
+          "source": "isp-keyagreement/src/main/java/isp/signatures/KeyDerivation.java",
           "type": "code",
           "language": "java",
-          "size": 1525,
-          "lines": 38
+          "size": 2614,
+          "lines": 51,
+          "sha256": "1de845955a4232955b329ec40518f4933978e25c0343b65bea0bce60c6c766b4"
         },
         {
           "path": "src/main/java/isp/signatures/SignatureExampleRSA.java",
           "url": "content/labs/isp-keyagreement/src/main/java/isp/signatures/SignatureExampleRSA.java",
+          "source": "isp-keyagreement/src/main/java/isp/signatures/SignatureExampleRSA.java",
           "type": "code",
           "language": "java",
-          "size": 2417,
-          "lines": 71
+          "size": 3947,
+          "lines": 90,
+          "sha256": "458581d1fbbb4af78a7a2decf95f62f0be9983f428f491fb94500e37919ab326"
         },
         {
           "path": "src/main/java/isp/signatures/SignatureExampleRSAPSS.java",
           "url": "content/labs/isp-keyagreement/src/main/java/isp/signatures/SignatureExampleRSAPSS.java",
+          "source": "isp-keyagreement/src/main/java/isp/signatures/SignatureExampleRSAPSS.java",
           "type": "code",
           "language": "java",
-          "size": 1422,
-          "lines": 36
+          "size": 2789,
+          "lines": 53,
+          "sha256": "01e233a9dda6d101015b5156660efed998f212afac10295096aba00bc6f388b4"
+        }
+      ]
+    },
+    {
+      "id": "isp-midterm",
+      "order": 5,
+      "title": "Midterm: authenticated key exchange",
+      "description": "Follow Alice and the server through signed ECDH, AES-GCM encryption, and password challenge-response authentication.",
+      "topics": [
+        "ECDH",
+        "RSA signatures",
+        "SHA-256",
+        "AES-GCM",
+        "Password challenge"
+      ],
+      "exerciseCount": 1,
+      "repository": "https://github.com/lem-course/isp-keyagreement",
+      "files": [
+        {
+          "path": "README.md",
+          "url": "content/labs/isp-midterm/README.md",
+          "type": "markdown",
+          "language": "markdown",
+          "size": 4958,
+          "lines": 90,
+          "sha256": "8ccbe142ebbf658e9d6eebfedd79a7d2c0a1692bbb81970034b8cdf38466fab4"
+        },
+        {
+          "path": "pom.xml",
+          "url": "content/labs/isp-midterm/pom.xml",
+          "source": "isp-keyagreement/pom.xml",
+          "type": "code",
+          "language": "xml",
+          "size": 1464,
+          "lines": 45,
+          "sha256": "f83ca250b26827d8b3a484f41b1b30c7c5eeb44110c5a0773bca83b98139934b"
+        },
+        {
+          "path": "src/main/java/isp/kolokvij/Midterm1KeyExchange.java",
+          "url": "content/labs/isp-midterm/src/main/java/isp/kolokvij/Midterm1KeyExchange.java",
+          "source": "isp-keyagreement/src/main/java/isp/kolokvij/Midterm1KeyExchange.java",
+          "type": "code",
+          "language": "java",
+          "size": 21536,
+          "lines": 430,
+          "sha256": "08d9924e038e39ec61c50c1e301ec8e632433ead7b984e4a37c575f3c62637d0"
+        },
+        {
+          "path": "src/main/java/isp/kolokvij/Screenshot_2023-11-20_at_18-58-27_Midterm_1_Programming_assignment.png",
+          "url": "content/labs/isp-midterm/src/main/java/isp/kolokvij/Screenshot_2023-11-20_at_18-58-27_Midterm_1_Programming_assignment.png",
+          "source": "isp-keyagreement/src/main/java/isp/kolokvij/Screenshot_2023-11-20_at_18-58-27_Midterm_1_Programming_assignment.png",
+          "type": "image",
+          "language": null,
+          "size": 364915,
+          "description": "Original midterm assignment: protocol overview and initial keys and password",
+          "sha256": "48609a93864b3a85d175a8c3985063be57337523ff4954dfde08817e53f6233f"
+        },
+        {
+          "path": "src/main/java/isp/kolokvij/izpit.png",
+          "url": "content/labs/isp-midterm/src/main/java/isp/kolokvij/izpit.png",
+          "source": "isp-keyagreement/src/main/java/isp/kolokvij/izpit.png",
+          "type": "image",
+          "language": null,
+          "size": 94946,
+          "description": "Original midterm assignment: detailed key exchange and authentication protocol",
+          "sha256": "a912e6dce3a4d9fb12b03061929c9beffb1c1e1074380ea5954834d12fd4fa11"
+        }
+      ]
+    },
+    {
+      "id": "isp-midterms-ab",
+      "order": 6,
+      "title": "Midterms A & B",
+      "description": "Read the original Midterm A and Midterm B implementations, covering authenticated key exchange and encrypted communication.",
+      "topics": [
+        "DH",
+        "ECDH",
+        "RSA signatures",
+        "AES-GCM",
+        "Password authentication"
+      ],
+      "exerciseCount": 2,
+      "repository": "https://github.com/marprac/marprac.github.io/tree/main/content/labs/isp-midterms-ab",
+      "files": [
+        {
+          "path": "README.md",
+          "url": "content/labs/isp-midterms-ab/README.md",
+          "type": "markdown",
+          "language": "markdown",
+          "size": 1129,
+          "lines": 29,
+          "sha256": "68d5e7f01b51bd89f31ed5c76d8f120d1198c6998032e255c83040f170feb7fa"
+        },
+        {
+          "path": "pom.xml",
+          "url": "content/labs/isp-midterms-ab/pom.xml",
+          "source": "isp-keyagreement/pom.xml",
+          "type": "code",
+          "language": "xml",
+          "size": 1464,
+          "lines": 45,
+          "sha256": "f83ca250b26827d8b3a484f41b1b30c7c5eeb44110c5a0773bca83b98139934b"
+        },
+        {
+          "path": "src/main/java/isp/signatures/MidtermA.java",
+          "url": "content/labs/isp-midterms-ab/src/main/java/isp/signatures/MidtermA.java",
+          "type": "code",
+          "language": "java",
+          "size": 14283,
+          "lines": 328,
+          "originalSha256": "4e9143f9278c5984c5cddecd35bac2baaed253b7527a9e6a0ced1709965e3a48",
+          "sha256": "4e9143f9278c5984c5cddecd35bac2baaed253b7527a9e6a0ced1709965e3a48"
+        },
+        {
+          "path": "src/main/java/isp/signatures/MidtermB.java",
+          "url": "content/labs/isp-midterms-ab/src/main/java/isp/signatures/MidtermB.java",
+          "type": "code",
+          "language": "java",
+          "size": 11400,
+          "lines": 256,
+          "originalSha256": "0010124746ebcc6a1a7f842bc893dc4591250babedff43164825efbc62460cd5",
+          "sha256": "0010124746ebcc6a1a7f842bc893dc4591250babedff43164825efbc62460cd5"
         }
       ]
     }

@@ -167,6 +167,10 @@ mark.search-term,mark.search-term * { background:var(--accent); color:#14200d!im
 .markdown-body th { background:#1b2633; color:#e1eaf0; }
 .markdown-body blockquote { border-left:3px solid #7c9d57; margin:18px 0; padding:8px 20px; background:#b9e87c08; }
 .markdown-body img { max-width:100%; }
+.image-panel { margin:0; padding:24px; }
+.image-panel img { display:block; width:auto; max-width:100%; height:auto; background:#fff; border-radius:5px; }
+.image-panel figcaption { margin-top:16px; color:var(--muted); font-size:14px; overflow-wrap:anywhere; }
+.image-panel a { color:var(--accent); }
 .archive-panel { padding:40px; color:var(--muted); }
 .archive-panel h2 { color:var(--text); margin:22px 0 12px; font-size:24px; }
 .archive-panel .button { margin-top:22px; max-width:100%; white-space:normal; overflow-wrap:anywhere; }

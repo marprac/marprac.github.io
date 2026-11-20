@@ -13,7 +13,9 @@
         "isp-secrecy",
         "isp-integrity",
         "isp-ae-pke",
-        "isp-keyagreement"
+        "isp-keyagreement",
+        "isp-midterm",
+        "isp-midterms-ab"
       ]
     },
     {
@@ -29,7 +31,9 @@
         "isp-secrecy",
         "isp-integrity",
         "isp-ae-pke",
-        "isp-keyagreement"
+        "isp-keyagreement",
+        "isp-midterm",
+        "isp-midterms-ab"
       ]
     },
     {
@@ -68,7 +72,9 @@
       "pages": 39,
       "size": 508150,
       "labIds": [
-        "isp-ae-pke"
+        "isp-ae-pke",
+        "isp-midterm",
+        "isp-midterms-ab"
       ]
     },
     {
@@ -81,7 +87,9 @@
       "pages": 37,
       "size": 589906,
       "labIds": [
-        "isp-keyagreement"
+        "isp-keyagreement",
+        "isp-midterm",
+        "isp-midterms-ab"
       ]
     }
   ]

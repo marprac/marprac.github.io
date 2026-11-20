@@ -15,6 +15,7 @@ const jsdomPath = process.env.ISP_JSDOM_PATH || path.join(tmpdir(), "isp-pdf-rea
 const { JSDOM, VirtualConsole } = await import(pathToFileURL(jsdomPath));
 const html = await readFile(path.join(root, "index.html"), "utf8");
 const vendors = await Promise.all(["marked.umd.js", "purify.min.js", "highlight.min.js"].map(file => readFile(path.join(root, "vendor", file), "utf8")));
+const { labs } = JSON.parse(await readFile(path.join(root, "content/labs.json"), "utf8"));
 const delay = (ms = 5) => new Promise(resolve => setTimeout(resolve, ms));
 function deferred() { let resolve; const promise = new Promise(done => { resolve = done; }); return { promise, resolve }; }
 async function waitFor(predicate, label) {
@@ -78,7 +79,7 @@ async function createApp({ suppressHashchange = false, ignoreHistory = false, ga
   const evaluated = entry.evaluate().catch(error => { app.errors.push(error.message); });
   return { ...app, requests, evaluated };
 }
-async function ready(app) { await waitFor(() => app.document.querySelectorAll("main .lab-card").length === 4, "initial overview"); }
+async function ready(app) { await waitFor(() => app.document.querySelectorAll("main .lab-card").length === labs.length, "initial overview"); }
 async function click(app, selector, predicate, label = selector) {
   const element = app.document.querySelector(selector);
   assert(element, `Missing clickable element: ${selector}`);
@@ -96,7 +97,7 @@ async function test(name, run) {
 
 await test("all primary links work with hashchange events suppressed", async () => {
   const app = await createApp({ suppressHashchange:true }); apps.push(app); await ready(app);
-  for (const [section, heading, count] of [["labs","Learn by reading the code.",4],["slides","Lecture slides",4],["scripts","Study scripts",2],["home","A clearer view ofcryptography.",4]]) {
+  for (const [section, heading, count] of [["labs","Learn by reading the code.",labs.length],["slides","Lecture slides",4],["scripts","Study scripts",2],["home","A clearer view ofcryptography.",labs.length]]) {
     await click(app, `[data-nav="${section}"]`, d => active(d, section) && d.querySelector("h1")?.textContent === heading);
     assert.equal(app.window.location.hash, section === "home" ? "#/" : `#/${section}`);
     assert.equal(app.document.querySelectorAll(section === "slides" || section === "scripts" ? "main .document-row" : "main .lab-card").length, count);
@@ -131,7 +132,7 @@ await test("a failed initial manifest request can recover by clicking Labs", asy
   const failures = new Map([["content/labs.json",1]]);
   const app = await createApp({ suppressHashchange:true, failures }); apps.push(app);
   await waitFor(() => /could not|couldn.t|unable|failed/i.test(app.document.querySelector("main").textContent), "initial loading error");
-  await click(app, '[data-nav="labs"]', d => active(d,"labs") && d.querySelectorAll("main .lab-card").length === 4, "retry follows Labs click");
+  await click(app, '[data-nav="labs"]', d => active(d,"labs") && d.querySelectorAll("main .lab-card").length === labs.length, "retry follows Labs click");
   assert.equal(app.requests.get("content/labs.json"),2);
   assert.deepEqual(app.errors, []);
 });

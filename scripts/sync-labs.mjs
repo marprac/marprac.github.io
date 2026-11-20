@@ -8,6 +8,7 @@ import { createHash } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { sameJavaCode } from './java-tokens.mjs';
 
 const definitions = [
   {
@@ -41,6 +42,47 @@ const definitions = [
     description: 'Explore public-key key exchange, Diffie-Hellman, digital signatures, and key derivation.',
     topics: ['DH', 'ECDH', 'ECDSA', 'RSA signatures', 'Key derivation'],
     exerciseCount: 2,
+    excludePrefixes: ['src/main/java/isp/kolokvij/'],
+  },
+  {
+    id: 'isp-midterm',
+    order: 5,
+    title: 'Midterm: authenticated key exchange',
+    description: 'Follow Alice and the server through signed ECDH, AES-GCM encryption, and password challenge-response authentication.',
+    topics: ['ECDH', 'RSA signatures', 'SHA-256', 'AES-GCM', 'Password challenge'],
+    exerciseCount: 1,
+    sourceId: 'isp-keyagreement',
+    sourcePaths: [
+      'pom.xml',
+      'src/main/java/isp/kolokvij/Midterm1KeyExchange.java',
+      'src/main/java/isp/kolokvij/izpit.png',
+      'src/main/java/isp/kolokvij/Screenshot_2023-11-20_at_18-58-27_Midterm_1_Programming_assignment.png',
+    ],
+    localPaths: ['README.md'],
+    fileDescriptions: {
+      'src/main/java/isp/kolokvij/izpit.png': 'Original midterm assignment: detailed key exchange and authentication protocol',
+      'src/main/java/isp/kolokvij/Screenshot_2023-11-20_at_18-58-27_Midterm_1_Programming_assignment.png': 'Original midterm assignment: protocol overview and initial keys and password',
+    },
+  },
+  {
+    id: 'isp-midterms-ab',
+    order: 6,
+    title: 'Midterms A & B',
+    description: 'Read the original Midterm A and Midterm B implementations, covering authenticated key exchange and encrypted communication.',
+    topics: ['DH', 'ECDH', 'RSA signatures', 'AES-GCM', 'Password authentication'],
+    exerciseCount: 2,
+    repository: 'https://github.com/marprac/marprac.github.io/tree/main/content/labs/isp-midterms-ab',
+    sourceId: 'isp-keyagreement',
+    sourcePaths: ['pom.xml'],
+    localPaths: [
+      'README.md',
+      'src/main/java/isp/signatures/MidtermA.java',
+      'src/main/java/isp/signatures/MidtermB.java',
+    ],
+    originalHashes: {
+      'src/main/java/isp/signatures/MidtermA.java': '4e9143f9278c5984c5cddecd35bac2baaed253b7527a9e6a0ced1709965e3a48',
+      'src/main/java/isp/signatures/MidtermB.java': '0010124746ebcc6a1a7f842bc893dc4591250babedff43164825efbc62460cd5',
+    },
   },
 ];
 
@@ -112,6 +154,9 @@ async function ensureDirectory(root, relativePath) {
 
 function describeFile(relativePath, bytes) {
   const extension = path.extname(relativePath).toLowerCase();
+  if (['.png', '.jpg', '.jpeg', '.webp', '.gif'].includes(extension)) {
+    return { type: 'image', language: null, size: bytes.length };
+  }
   if (['.zip', '.tar', '.gz', '.7z', '.rar'].includes(extension)) {
     return { type: 'archive', language: null, size: bytes.length };
   }
@@ -172,18 +217,45 @@ async function main() {
   // Validate and read every source before making any changes to generated content.
   const prepared = [];
   for (const definition of definitions) {
-    const root = path.join(sourceRoot, definition.id);
+    const sourceId = definition.sourceId || definition.id;
+    const root = path.join(sourceRoot, sourceId);
     const rootStat = await fs.lstat(root);
     if (!rootStat.isDirectory() || rootStat.isSymbolicLink()) throw new Error(`Invalid source repository directory: ${root}`);
     assertWithin(sourceRoot, await fs.realpath(root));
-    const paths = ['README.md', 'pom.xml', ...await sourceFiles(path.join(root, 'src'), root)].sort(comparePaths);
+    const paths = (definition.sourcePaths || ['README.md', 'pom.xml', ...await sourceFiles(path.join(root, 'src'), root)])
+      .filter((filename) => !(definition.excludePrefixes || []).some((prefix) => filename.startsWith(prefix)))
+      .sort(comparePaths);
     const files = [];
     for (const relativePath of paths) {
       const source = path.join(root, ...relativePath.split('/'));
       await requireRegularFile(source, root);
-      const bytes = await fs.readFile(source);
-      files.push({ path: relativePath, bytes, hash: sha256(bytes), ...describeFile(relativePath, bytes) });
+      let bytes = await fs.readFile(source);
+      // Keep the site's line-by-line explanations when the upstream Java program
+      // is unchanged. Reject a code conflict rather than discarding annotations.
+      const destination = path.join(projectRoot, 'content', 'labs', definition.id, ...relativePath.split('/'));
+      const destinationStat = await existingStat(destination);
+      if (relativePath.endsWith('.java') && destinationStat) {
+        await requireRegularFile(destination, projectRoot);
+        const annotated = await fs.readFile(destination);
+        if (!sameJavaCode(bytes.toString('utf8'), annotated.toString('utf8'))) {
+          throw new Error(`Java code differs from its source; reconcile the annotated file before syncing: ${destination}`);
+        }
+        bytes = annotated;
+      }
+      const description = definition.fileDescriptions?.[relativePath];
+      files.push({ path: relativePath, source: `${sourceId}/${relativePath}`, bytes, hash: sha256(bytes), ...describeFile(relativePath, bytes), ...(description ? { description } : {}) });
     }
+    for (const relativePath of definition.localPaths || []) {
+      const filename = path.join(projectRoot, 'content', 'labs', definition.id, relativePath);
+      await requireRegularFile(filename, projectRoot);
+      const bytes = await fs.readFile(filename);
+      const originalSha256 = definition.originalHashes?.[relativePath];
+      if (originalSha256 && sha256(bytes) !== originalSha256) {
+        throw new Error(`Original file must remain byte-for-byte unchanged: ${filename}`);
+      }
+      files.push({ path: relativePath, bytes, hash: sha256(bytes), ...describeFile(relativePath, bytes), ...(originalSha256 ? { originalSha256 } : {}) });
+    }
+    files.sort((a, b) => comparePaths(a.path, b.path));
     prepared.push({ definition, files });
   }
 
@@ -206,11 +278,12 @@ async function main() {
       await fs.writeFile(destination, file.bytes);
       if (sha256(await fs.readFile(destination)) !== file.hash) throw new Error(`Copy verification failed: ${destination}`);
       const { bytes, hash, ...metadata } = file;
-      manifestFiles.push({ path: metadata.path, url: asURL(`${relativeRoot}/${file.path}`), ...Object.fromEntries(Object.entries(metadata).filter(([key]) => key !== 'path')) });
+      manifestFiles.push({ path: metadata.path, url: asURL(`${relativeRoot}/${file.path}`), ...Object.fromEntries(Object.entries(metadata).filter(([key]) => key !== 'path')), sha256: hash });
       copied += 1;
     }
     await removeStaleGeneratedFiles(destinationRoot, new Set(files.map((file) => file.path)));
-    labs.push({ ...definition, repository: `https://github.com/lem-course/${definition.id}`, files: manifestFiles });
+    const { sourceId, sourcePaths, localPaths, excludePrefixes, fileDescriptions, originalHashes, ...lab } = definition;
+    labs.push({ ...lab, repository: definition.repository || `https://github.com/lem-course/${sourceId || definition.id}`, files: manifestFiles });
   }
   const manifestPath = path.join(projectRoot, 'content', 'labs.json');
   const existingManifest = await existingStat(manifestPath);

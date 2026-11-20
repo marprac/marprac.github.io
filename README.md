@@ -2,9 +2,9 @@
 
 A temporary cryptography course library for [marprac.github.io](https://marprac.github.io), hosted with GitHub Pages. The personal portfolio is preserved in `archive/personal/` and has no links in the course site.
 
-The site includes four labs with all 22 Java source files, four original READMEs, four Maven configurations, and the original assignment ZIP. Six PDFs (four slide decks and two study scripts) have an integrated PDF/Text reader with page navigation, zoom, selectable text, search, and downloads. Global search covers the lab files and all 181 document pages.
+The site includes six labs with 25 Java source files, six READMEs and Maven configurations, the original assignment ZIP, and two original midterm assignment images. Six PDFs (four slide decks and two study scripts) have an integrated PDF/Text reader with page navigation, zoom, selectable text, search, and downloads. Global search covers the lab files and all 181 document pages.
 
-The interface is static HTML, CSS, and JavaScript. All libraries and PDF rendering assets are vendored locally; visitors do not depend on a CDN. No build step or server application is required. Original exercises and unfinished TODOs are displayed unchanged.
+The interface is static HTML, CSS, and JavaScript. All libraries and PDF rendering assets are vendored locally; visitors do not depend on a CDN. No build step or server application is required. Labs 1-5 retain their original code behavior and TODOs, with added line-by-line explanations for Alice, Bob, and the midterm server. Lab 5 contains the supplied authenticated ECDH midterm and readable protocol notes; the original assignment images also open in the file reader. Lab 6 contains `MidtermA.java` and `MidtermB.java` exactly as supplied, without added comments or any other file changes.
 
 ## Preview
 
@@ -18,13 +18,13 @@ Open `http://127.0.0.1:8080`. Hash-based links work with GitHub Pages, including
 
 ## Refresh the course materials
 
-Lab snapshots come from the four sibling repositories (`isp-secrecy`, `isp-integrity`, `isp-ae-pke`, `isp-keyagreement`). After changing a lab, run:
+Lab snapshots come from the four sibling repositories (`isp-secrecy`, `isp-integrity`, `isp-ae-pke`, `isp-keyagreement`). Lab 5 imports `Midterm1KeyExchange.java` and the two assignment PNGs from `isp-keyagreement/src/main/java/isp/kolokvij/`, alongside that repository's Maven configuration. The midterm is excluded from Lab 4 to keep it in a separate fifth entry. Lab 6 preserves the two supplied Java midterms as local snapshots under `content/labs/isp-midterms-ab/`, with a Maven configuration from the key-agreement lab. Refreshing the site does not require the original Downloads files. After changing a lab, run:
 
 ```powershell
 node scripts/sync-labs.mjs
 ```
 
-Use `--source-root <directory>` to choose another directory containing the four repositories. This copies `src/`, `README.md`, and `pom.xml`, verifies their SHA-256 hashes, and refreshes `content/labs.json`. It never edits the source repositories or copies their Git metadata or agent instructions.
+Use `--source-root <directory>` to choose another directory containing the four repositories. This copies the selected source files, READMEs, and Maven configurations, verifies their SHA-256 hashes, and refreshes `content/labs.json`. The READMEs for Labs 5-6 and the Lab 6 Java snapshots are maintained locally. Existing Java annotations are retained when their non-comment tokens match the source; a code mismatch stops synchronization before any writes so source updates and study comments can be reconciled explicitly. It never edits the source repositories or copies their Git metadata or agent instructions.
 
 To reimport the six original PDFs from Downloads and regenerate the searchable text, install `pypdf` and run:
 
@@ -50,6 +50,6 @@ Commit and push the restored files through the existing GitHub Pages workflow. T
 node scripts/check-site.mjs
 ```
 
-The check verifies all manifest paths, source hashes, document page metadata, required local assets, archive preservation, and module syntax. DOM integration tests for the application and PDF reader can additionally run with an external `jsdom` installation; see the comments in `scripts/check-app.mjs` and `scripts/check-pdf-reader.mjs`.
+The check verifies all manifest paths, file hashes and line counts, unchanged non-comment Java tokens against available sibling sources, original image bytes, document page metadata, required local assets, archive preservation, and module syntax. DOM integration tests for the application and PDF reader can additionally run with an external `jsdom` installation; see the comments in `scripts/check-app.mjs` and `scripts/check-pdf-reader.mjs`.
 
-Vendored library versions and licenses are under `vendor/`, including PDF.js licensing and attribution. Lab source links point to the original `lem-course` repositories.
+Vendored library versions and licenses are under `vendor/`, including PDF.js licensing and attribution. The original lab source links point to the `lem-course` repositories; the Lab 6 midterms are supplied file snapshots.

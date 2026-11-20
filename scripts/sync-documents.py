@@ -15,7 +15,7 @@ import shutil
 from pypdf import PdfReader
 
 
-LAB_IDS = ["isp-secrecy", "isp-integrity", "isp-ae-pke", "isp-keyagreement"]
+LAB_IDS = ["isp-secrecy", "isp-integrity", "isp-ae-pke", "isp-keyagreement", "isp-midterm", "isp-midterms-ab"]
 DOCUMENTS = [
     {
         "id": "quick-reference",
@@ -55,7 +55,7 @@ DOCUMENTS = [
         "title": "Authenticated & Public-key Encryption",
         "description": "Ciphertext integrity, chosen-ciphertext security, authenticated encryption, trapdoor functions, RSA and OAEP.",
         "category": "slides",
-        "labIds": ["isp-ae-pke"],
+        "labIds": ["isp-ae-pke", "isp-midterm", "isp-midterms-ab"],
     },
     {
         "id": "04-key-exchange",
@@ -63,7 +63,7 @@ DOCUMENTS = [
         "title": "Key Exchange",
         "description": "Trusted third parties, Diffie-Hellman, digital signatures, RSA-PSS and key derivation.",
         "category": "slides",
-        "labIds": ["isp-keyagreement"],
+        "labIds": ["isp-keyagreement", "isp-midterm", "isp-midterms-ab"],
     },
 ]
 

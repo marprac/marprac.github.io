@@ -85,13 +85,13 @@ async function test(name, run) {
   catch (error) { failures.push({ name, error }); process.stderr.write(`FAIL ${name}: ${error.message}\n`); }
 }
 
-await test("overview includes all four labs, six documents and accurate Java count", async () => {
+await test("overview includes all six labs, six documents and accurate Java count", async () => {
   assert.equal(app.document.querySelectorAll("main .lab-card").length, labs.length);
   assert.equal(app.document.querySelectorAll("main .document-row").length, documents.length);
   const javaCount = labs.flatMap(lab => lab.files).filter(file => file.language === "java").length;
-  assert.equal(javaCount, 22);
-  assert.match(app.document.querySelector(".hero-meta").textContent, /22\s*JAVA FILES/);
-  assert.equal(app.document.querySelectorAll("#lab-nav a").length, 4);
+  assert.equal(javaCount, 25);
+  assert.match(app.document.querySelector(".hero-meta").textContent, /25\s*JAVA FILES/);
+  assert.equal(app.document.querySelectorAll("#lab-nav a").length, labs.length);
   assert.equal(app.document.querySelector('[data-nav="home"]').getAttribute("aria-current"), "page");
 });
 
@@ -119,6 +119,20 @@ for (const lab of labs) {
       assert.equal(app.document.querySelectorAll(".code-line").length, expectedCode(original).length);
       assert(app.document.querySelector('.code-line [class^="hljs-"]'));
       assert.equal(new URL(app.document.querySelector('.file-actions a[download]').href).pathname, `/${file.url}`);
+    });
+  }
+}
+
+for (const lab of labs) {
+  for (const file of lab.files.filter(file => file.type === "image")) {
+    await test(`${lab.id}/${file.path} displays the original assignment image`, async () => {
+      await go(app, labHash(lab, file), document => document.querySelector(".file-meta")?.textContent.startsWith(file.path) && !!document.querySelector(".image-panel img"));
+      const image = app.document.querySelector(".image-panel img");
+      assert.equal(new URL(image.src).pathname, `/${file.url}`);
+      assert(image.alt);
+      assert.equal(new URL(app.document.querySelector('.file-actions a[download]').href).pathname, `/${file.url}`);
+      assert(!app.document.querySelector(".code-view"));
+      assert(!app.document.querySelector('[data-action="copy"]'));
     });
   }
 }
@@ -273,10 +287,10 @@ await test("a stale delayed search cannot overwrite a newer route", async () => 
   const isolated = await createApp(new Map([[documents[0].textUrl, () => delayed]]));
   try {
     await go(isolated, "#/search?q=AES", document => !!document.querySelector(".search-results"));
-    await go(isolated, "#/labs", document => document.querySelectorAll("main .lab-card").length === 4);
+    await go(isolated, "#/labs", document => document.querySelectorAll("main .lab-card").length === labs.length);
     release(JSON.stringify({ pages: ["AES"] }));
     await delay(30);
-    assert.equal(isolated.document.querySelectorAll("main .lab-card").length, 4);
+    assert.equal(isolated.document.querySelectorAll("main .lab-card").length, labs.length);
     assert.equal(isolated.document.querySelector(".search-results"), null);
     assert.deepEqual(isolated.errors, []);
   } finally { isolated.dom.window.close(); }

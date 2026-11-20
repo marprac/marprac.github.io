@@ -133,7 +133,7 @@ await test("global code search searches every lab rather than only the open repo
   for (const lab of labs) replacements.set(lab.files.find(file => file.language === "java").url,"// crosslab_search_token\nclass Fixture {}\n");
   const isolated = await createApp(replacements); apps.push(isolated);
   await go(isolated,searchHash("crosslab_search_token","code"));
-  assert.equal(results(isolated).length,4);
+  assert.equal(results(isolated).length,labs.length);
   for (const lab of labs) assert(results(isolated).some(result => [...result.querySelectorAll('a[href]')].some(link => link.hash.startsWith(`#/lab/${lab.id}?`))),`Missing ${lab.id}`);
 });
 
@@ -216,11 +216,11 @@ await test("a slow code search cannot replace a newer page",async () => {
   isolated.window.location.hash = searchHash(needle,"code");
   await waitFor(() => !!isolated.document.querySelector(".search-results"),"pending code search");
   isolated.document.querySelector('[data-nav="labs"]').click();
-  await waitFor(() => isolated.document.querySelectorAll("main .lab-card").length === 4,"newer Labs page");
+  await waitFor(() => isolated.document.querySelectorAll("main .lab-card").length === labs.length,"newer Labs page");
   release(source);
   await delay(30);
   assert.equal(isolated.document.querySelector(".search-results"),null);
-  assert.equal(isolated.document.querySelectorAll("main .lab-card").length,4);
+  assert.equal(isolated.document.querySelectorAll("main .lab-card").length,labs.length);
 });
 
 for (const active of apps) {

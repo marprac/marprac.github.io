@@ -110,6 +110,7 @@ async function loadCollection() {
     collectionRequest = (async () => {
       const [labData,documentData] = await Promise.all([readJSON("./content/labs.json"),readJSON("./content/documents.json")]);
       labs = labData.labs;
+      document.querySelector('[data-nav="labs"] .nav-count').textContent = labs.length;
       documents = documentData.documents;
       document.querySelector("#lab-nav").innerHTML = labs.map((lab) => `<a href="${labLink(lab)}" data-lab-nav="${escape(lab.id)}"><span class="lab-nav-number">${String(lab.order).padStart(2,"0")}</span><span>${escape(lab.title)}</span></a>`).join("");
       collectionReady = true;
@@ -138,9 +139,9 @@ function heading(eyebrow, title, description) {
   return `<div class="page-heading"><div><p class="eyebrow">${escape(eyebrow)}</p><h1>${escape(title)}</h1><p>${escape(description)}</p></div></div>`;
 }
 function labCard(lab) {
-  const symbols = ["lock", "shield", "terminal", "key"];
-  const sourceCount = lab.files.filter((file) => file.path.startsWith("src/")).length;
-  return `<a class="lab-card" href="${labLink(lab)}"><div class="lab-card-top"><span class="lab-icon">${icon(symbols[lab.order - 1])}</span><span class="lab-label">LAB ${String(lab.order).padStart(2,"0")} / JAVA</span></div><h3>${escape(lab.title)}</h3><p>${escape(lab.description)}</p><div class="tags">${lab.topics.map((tag) => `<span class="tag">${escape(tag)}</span>`).join("")}</div><div class="lab-card-bottom"><span>${sourceCount} source files · ${lab.exerciseCount} ${lab.exerciseCount === 1 ? "exercise" : "exercises"}</span><span class="open-label">Open lab</span></div></a>`;
+  const symbols = ["lock", "shield", "terminal", "key", "shield", "terminal"];
+  const sourceCount = lab.files.filter((file) => file.language === "java").length;
+  return `<a class="lab-card" href="${labLink(lab)}"><div class="lab-card-top"><span class="lab-icon">${icon(symbols[lab.order - 1])}</span><span class="lab-label">LAB ${String(lab.order).padStart(2,"0")} / JAVA</span></div><h3>${escape(lab.title)}</h3><p>${escape(lab.description)}</p><div class="tags">${lab.topics.map((tag) => `<span class="tag">${escape(tag)}</span>`).join("")}</div><div class="lab-card-bottom"><span>${sourceCount} Java ${sourceCount === 1 ? "file" : "files"} · ${lab.exerciseCount} ${lab.exerciseCount === 1 ? "exercise" : "exercises"}</span><span class="open-label">Open lab</span></div></a>`;
 }
 function documentRow(doc) {
   return `<a class="document-row" href="${docLink(doc)}"><span class="document-icon ${doc.category}">${icon(doc.category === "slides" ? "slides" : "book")}</span><div class="document-info"><h3>${escape(doc.title)}</h3><p>${doc.category === "slides" ? "Lecture slides" : "Study script"} · PDF · ${size(doc.size)}</p></div><span class="doc-page-count">${doc.pages} pages</span><span class="doc-open">Read</span></a>`;
@@ -150,13 +151,13 @@ function collection(title, description, href, contents) {
 }
 function home() {
   navigation("home"); setHeading("Overview", "Cryptography collection");
-  main.innerHTML = `<section class="hero"><div><p class="eyebrow">ISP / THE CRYPTOGRAPHY COLLECTION</p><h1>A clearer view of<br><span>cryptography.</span></h1><p class="hero-description">Your labs, lecture slides, and study scripts, together. Explore the code, revisit the theory, and make the connections.</p><div class="hero-actions"><a class="button primary" href="#/labs">${icon("code")}Explore the labs</a><a class="button subtle" href="#/scripts">${icon("book")}Read study scripts</a></div><div class="hero-meta"><span><strong>04</strong> LABS</span><span><strong>06</strong> DOCUMENTS</span><span><strong>22</strong> JAVA FILES</span></div></div><div class="hero-art" aria-hidden="true"><div class="cipher-row">7A 1F C4 09 E8</div><div class="cipher-row">D3 A9 2B 6E 01</div><div class="cipher-center">E<sub>k</sub>(m) = c</div><div class="cipher-row">B8 00 F2 5D 3C</div><div class="cipher-row">4E 6A 91 D0 7F</div></div></section>
+  main.innerHTML = `<section class="hero"><div><p class="eyebrow">ISP / THE CRYPTOGRAPHY COLLECTION</p><h1>A clearer view of<br><span>cryptography.</span></h1><p class="hero-description">Your labs, lecture slides, and study scripts, together. Explore the code, revisit the theory, and make the connections.</p><div class="hero-actions"><a class="button primary" href="#/labs">${icon("code")}Explore the labs</a><a class="button subtle" href="#/scripts">${icon("book")}Read study scripts</a></div><div class="hero-meta"><span><strong>${String(labs.length).padStart(2,"0")}</strong> LABS</span><span><strong>${String(documents.length).padStart(2,"0")}</strong> DOCUMENTS</span><span><strong>${labs.flatMap((lab) => lab.files).filter((file) => file.language === "java").length}</strong> JAVA FILES</span></div></div><div class="hero-art" aria-hidden="true"><div class="cipher-row">7A 1F C4 09 E8</div><div class="cipher-row">D3 A9 2B 6E 01</div><div class="cipher-center">E<sub>k</sub>(m) = c</div><div class="cipher-row">B8 00 F2 5D 3C</div><div class="cipher-row">4E 6A 91 D0 7F</div></div></section>
     ${collection("The lab collection", "From symmetric ciphers to key exchange.", "#/labs", `<div class="lab-grid">${labs.map(labCard).join("")}</div>`)}
     <div class="resource-columns">${collection("Lecture slides", "The theory behind the code.", "#/slides", `<div class="document-list">${documents.filter((doc) => doc.category === "slides").map(documentRow).join("")}</div>`)}${collection("Study scripts", "Keep the essentials close.", "#/scripts", `<div class="document-list">${documents.filter((doc) => doc.category === "script").map(documentRow).join("")}</div>`)}</div>`;
 }
 function listLabs() {
   navigation("labs"); setHeading("Labs");
-  main.innerHTML = heading("THE LAB COLLECTION", "Learn by reading the code.", "Four Java labs, with every source file, the original README, and Maven configuration.") + `<div class="lab-grid">${labs.map(labCard).join("")}</div>`;
+  main.innerHTML = heading("THE LAB COLLECTION", "Learn by reading the code.", `${labs.length} Java labs, including the midterm, with explained code, assignment notes, and Maven configuration.`) + `<div class="lab-grid">${labs.map(labCard).join("")}</div>`;
 }
 function listDocuments(category) {
   const isSlides = category === "slides";
@@ -281,6 +282,11 @@ async function showLab(id,params,revision) {
     ${collection("Read alongside this lab", "Related lecture slides and study scripts.", "", `<div class="document-list related-resources">${related.map(documentRow).join("")}</div>`)}`;
   main.querySelector(".file-search").addEventListener("input", (event) => { main.querySelector(".file-tree").innerHTML = fileTree(lab,file.path,event.target.value); });
   const content = main.querySelector(".file-content");
+  if (file.type === "image") {
+    const description = file.description || file.path.split("/").pop();
+    content.innerHTML = `<figure class="image-panel"><a href="${escape(file.url)}" target="_blank" rel="noopener"><img src="${escape(file.url)}" alt="${escape(description)}"></a><figcaption>${escape(description)} &middot; <a href="${escape(file.url)}" target="_blank" rel="noopener">Open full size</a></figcaption></figure>`;
+    return;
+  }
   if (!isText) {
     content.innerHTML = `<div class="archive-panel"><span class="lab-icon">${icon("file")}</span><h2>${file.type === "archive" ? "Original lab archive" : "Original file"}</h2><p>${file.type === "archive" ? "This ZIP is included exactly as supplied in the lab’s source folder. Download it to inspect its contents. The Java files are also available in the file browser." : "Download this file to open it in a suitable application."}</p><a class="button primary" href="${escape(file.url)}" download>Download ${escape(file.path.split("/").pop())}</a></div>`;
     return;
@@ -315,7 +321,7 @@ function showDocument(id) {
 async function search(query,revision,requestedScope) {
   const scope = ["code","documents"].includes(requestedScope) ? requestedScope : "all";
   navigation("search"); setHeading("Search"); searchInput.value = query;
-  main.innerHTML = `${heading("GLOBAL SEARCH","Search the collection","Find methods, algorithms, comments, and exact code across all four labs, alongside READMEs, slides, and study scripts.")}<form class="search-page-form" role="search" aria-label="Search the entire collection"><label class="sr-only" for="collection-query">Search code and course materials</label><span>${icon("search")}</span><input id="collection-query" type="search" value="${escape(query)}" placeholder="Try Cipher.getInstance, HMAC, or Diffie-Hellman" autocomplete="off"><button class="button primary" type="submit">Search</button></form><nav class="search-scopes" aria-label="Search scope">${[["all","Everything"],["code","Code"],["documents","Documents"]].map(([value,label]) => `<a href="${searchLink(query,value)}" data-search-scope="${value}"${value === scope ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav><div class="search-results" aria-live="polite" aria-busy="true"><div class="loading-state">Searching the collection…</div></div>`;
+  main.innerHTML = `${heading("GLOBAL SEARCH","Search the collection",`Find methods, algorithms, comments, and exact code across all ${labs.length} labs, alongside READMEs, slides, and study scripts.`)}<form class="search-page-form" role="search" aria-label="Search the entire collection"><label class="sr-only" for="collection-query">Search code and course materials</label><span>${icon("search")}</span><input id="collection-query" type="search" value="${escape(query)}" placeholder="Try Cipher.getInstance, HMAC, or Diffie-Hellman" autocomplete="off"><button class="button primary" type="submit">Search</button></form><nav class="search-scopes" aria-label="Search scope">${[["all","Everything"],["code","Code"],["documents","Documents"]].map(([value,label]) => `<a href="${searchLink(query,value)}" data-search-scope="${value}"${value === scope ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav><div class="search-results" aria-live="polite" aria-busy="true"><div class="loading-state">Searching the collection…</div></div>`;
   main.querySelector(".search-page-form").addEventListener("submit",(event) => {
     event.preventDefault(); navigate(searchLink(main.querySelector("#collection-query").value.trim(),scope));
   });

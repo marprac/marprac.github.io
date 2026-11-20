@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import assert from "node:assert/strict";
+import { sameJavaCode } from "./java-tokens.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
@@ -23,11 +24,23 @@ async function asset(url) {
 }
 const { labs } = await json("content/labs.json");
 const { documents } = await json("content/documents.json");
-assert.equal(labs.length,4);
+assert.equal(labs.length,6);
 assert.equal(documents.length,6);
 const ids = new Set(labs.map((lab) => lab.id));
-assert.equal(ids.size,4);
+assert.equal(ids.size,6);
+assert.deepEqual(labs.map((lab) => lab.order),[1,2,3,4,5,6]);
+const midterm = labs.find((lab) => lab.id === "isp-midterm");
+assert(midterm?.files.some((file) => file.path.endsWith("Midterm1KeyExchange.java")));
+assert.equal(midterm.files.filter((file) => file.type === "image").length,2);
+assert(!labs.find((lab) => lab.id === "isp-keyagreement").files.some((file) => file.path.includes("/kolokvij/")));
+const midtermsAB = labs.find((lab) => lab.id === "isp-midterms-ab");
+assert(midtermsAB && midtermsAB.order === 6);
+assert.deepEqual(midtermsAB.files.filter((file) => file.language === "java").map((file) => file.path),[
+  "src/main/java/isp/signatures/MidtermA.java", "src/main/java/isp/signatures/MidtermB.java",
+]);
+assert(midtermsAB.files.filter((file) => file.language === "java").every((file) => /^[a-f0-9]{64}$/.test(file.originalSha256)));
 let originalCopies = 0;
+let annotatedCopies = 0;
 let javaCount = 0;
 for (const lab of labs) {
   const files = new Set(lab.files.map((file) => file.path));
@@ -36,17 +49,30 @@ for (const lab of labs) {
   for (const file of lab.files) {
     const bytes = await asset(file.url);
     assert.equal(bytes.length,file.size,`Size mismatch: ${file.url}`);
+    assert.equal(hash(bytes),file.sha256,`Hash mismatch: ${file.url}`);
+    if (file.originalSha256) assert.equal(hash(bytes),file.originalSha256,`Original midterm was modified: ${file.url}`);
+    if (file.lines !== undefined) {
+      const text = bytes.toString("utf8");
+      const lines = text ? text.split(/\r\n|\r|\n/).length - (/\r?\n$|\r$/.test(text) ? 1 : 0) : 0;
+      assert.equal(lines,file.lines,`Line count mismatch: ${file.url}`);
+    }
     assert(["README.md","pom.xml"].includes(file.path) || file.path.startsWith("src/"));
     assert(!file.path.includes(".."));
     if (file.language === "java") javaCount++;
-    const original = path.resolve(root,"..",lab.id,...file.path.split("/"));
-    if (await exists(original)) {
-      assert.equal(hash(bytes),hash(await fs.readFile(original)),`Source changed: ${file.url}`);
-      originalCopies++;
+    const original = file.source ? path.resolve(root,"..",...file.source.split("/")) : null;
+    if (original && await exists(original)) {
+      const sourceBytes = await fs.readFile(original);
+      if (file.language === "java") {
+        assert(sameJavaCode(bytes.toString("utf8"),sourceBytes.toString("utf8")),`Java program changed: ${file.url}`);
+        annotatedCopies++;
+      } else {
+        assert.equal(hash(bytes),hash(sourceBytes),`Source changed: ${file.url}`);
+        originalCopies++;
+      }
     }
   }
 }
-assert.equal(javaCount,22);
+assert.equal(javaCount,25);
 const pdfSources = {
   "quick-reference":"Cryptography_Algorithms_Quick_Reference.pdf",
   "exam-study-script":"Cryptography_Complete_Exam_Study_Script.pdf",
@@ -74,11 +100,11 @@ const styles = (await read("styles.css")).toString();
 assert(styles.includes(".app-shell") && styles.includes(".lab-workbench") && styles.includes(".code-line"),"Course styles are missing");
 for (const match of index.matchAll(/(?:src|href)="\.\/([^"]+)"/g)) await asset(match[1]);
 assert(!index.includes("archive/personal"),"Personal site must remain unlinked");
-for (const file of ["bootstrap.js","app.js","pdf-reader.js","scripts/sync-labs.mjs"]) {
+for (const file of ["bootstrap.js","app.js","pdf-reader.js","scripts/sync-labs.mjs","scripts/java-tokens.mjs"]) {
   const result = spawnSync(process.execPath,["--input-type=module","--check"],{input:await read(file),encoding:"utf8"});
   assert.equal(result.status,0,`${file}: ${result.stderr}`);
 }
 const backup = await json("archive/personal/manifest.json");
 for (const file of backup.files) assert.equal(hash(await read(`archive/personal/${file.name}`)),file.sha256,`Portfolio backup changed: ${file.name}`);
-console.log(`PASS: 4 labs, 22 Java files, 6 PDFs, ${pageCount} searchable pages, ${checkedAssets} local asset checks.`);
-console.log(`PASS: ${originalCopies} original files verified byte for byte; portfolio archive intact; module syntax valid.`);
+console.log(`PASS: ${labs.length} labs, ${javaCount} Java files, 6 PDFs, ${pageCount} searchable pages, ${checkedAssets} local asset checks.`);
+console.log(`PASS: ${annotatedCopies} Java programs match their sources; ${originalCopies} original files verified byte for byte; portfolio archive intact; module syntax valid.`);
