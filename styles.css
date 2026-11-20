@@ -91,6 +91,11 @@ main { padding:40px 46px 50px; min-height:calc(100vh - 160px); }
 .maven-powershell>p { margin-top:12px; }
 .maven-guide .maven-guide-note { margin-top:17px; font-size:14px; }
 .maven-guide-note a { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
+.maven-programs { display:grid; gap:12px; list-style:none; padding:0; margin:16px 0 0; }
+.maven-programs li { display:flex; flex-wrap:wrap; gap:4px 14px; align-items:baseline; font-size:14px; }
+.maven-programs a { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
+.maven-programs code { font:14px/1.7 var(--mono); overflow-wrap:anywhere; }
+.maven-programs span { color:var(--muted); }
 .lab-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
 .lab-card { display:flex; flex-direction:column; min-width:0; padding:24px; border:1px solid var(--line); border-radius:10px; background:var(--surface); transition:border-color .18s,transform .18s; }
 .lab-card:hover { border-color:#647b50; transform:translateY(-2px); }

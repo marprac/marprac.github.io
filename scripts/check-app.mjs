@@ -106,19 +106,22 @@ await test("dashboard Maven guide preserves the commands and copies each platfor
   const posix = [
     "mvn compile",
     "mvn dependency:build-classpath -Dmdep.outputFile=target/classpath.txt",
-    'java -cp "target/classes:$(cat target/classpath.txt)" isp.keyagreement.AgentCommunicationECDH',
+    'java -cp "target/classes:$(cat target/classpath.txt)" isp.A1AgentCommunicationGCM',
   ].join("\n");
   const powershell = [
     "mvn compile",
     'mvn dependency:build-classpath "-Dmdep.outputFile=target/classpath.txt"',
-    'java -cp "target/classes;$((Get-Content target/classpath.txt -Raw).Trim())" isp.keyagreement.AgentCommunicationECDH',
+    'java -cp "target/classes;$((Get-Content target/classpath.txt -Raw).Trim())" isp.A1AgentCommunicationGCM',
   ].join("\n");
   assert.equal(guide.querySelector('[data-maven-commands="posix"]').textContent,posix);
   assert.equal(guide.querySelector('[data-maven-commands="powershell"]').textContent,powershell);
-  assert.match(guide.querySelector('a[href*="AgentCommunicationECDH"]').hash,/^#\/lab\/isp-keyagreement\?/);
-  assert.equal(guide.querySelector('a[href="#/lab/isp-midterms-ab"]').textContent,"Lab 6");
-  assert.match(guide.textContent,/isp\.signatures\.MidtermACommented/);
-  assert.match(guide.textContent,/isp\.signatures\.MidtermBCommented/);
+  for (const name of ["A1AgentCommunicationGCM","A2AgentCommunicationPublicSpace","A3AgentCommunicationRSA","GCMExample","RSAExample"]) {
+    const sourcePath = `src/main/java/isp/${name}.java`;
+    const link = guide.querySelector(`a[href="#/lab/isp-ae-pke?file=${encodeURIComponent(sourcePath)}"]`);
+    assert(link,`Missing Lab 3 source link for ${name}`);
+    assert(guide.textContent.includes(`isp.${name}`),`Missing fully qualified Lab 3 class ${name}`);
+  }
+  assert(!/isp\.signatures\.Midterm/.test(guide.textContent),"Dashboard guide must use Lab 3 examples instead of Lab 6");
   guide.querySelector('[data-maven-copy="posix"]').click();
   await delay();
   assert.equal(app.copied.at(-1),posix);

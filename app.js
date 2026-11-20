@@ -150,17 +150,24 @@ function collection(title, description, href, contents) {
   return `<section class="collection-section"><div class="section-heading"><div><h2>${title}</h2>${description ? `<p>${description}</p>` : ""}</div>${href ? `<a href="${href}">View all</a>` : ""}</div>${contents}</section>`;
 }
 function mavenGuide() {
+  const programs = [
+    ["A1AgentCommunicationGCM", "AES-GCM messages between Alice and Bob"],
+    ["A2AgentCommunicationPublicSpace", "Public-space integrity check for a 200 MB transfer"],
+    ["A3AgentCommunicationRSA", "RSA-encrypted agent communication"],
+    ["GCMExample", "Standalone AES-GCM example"],
+    ["RSAExample", "Standalone RSA example"],
+  ];
   const posixCommands = [
     "mvn compile",
     "mvn dependency:build-classpath -Dmdep.outputFile=target/classpath.txt",
-    'java -cp "target/classes:$(cat target/classpath.txt)" isp.keyagreement.AgentCommunicationECDH',
+    'java -cp "target/classes:$(cat target/classpath.txt)" isp.A1AgentCommunicationGCM',
   ].join("\n");
   const powershellCommands = [
     "mvn compile",
     'mvn dependency:build-classpath "-Dmdep.outputFile=target/classpath.txt"',
-    'java -cp "target/classes;$((Get-Content target/classpath.txt -Raw).Trim())" isp.keyagreement.AgentCommunicationECDH',
+    'java -cp "target/classes;$((Get-Content target/classpath.txt -Raw).Trim())" isp.A1AgentCommunicationGCM',
   ].join("\n");
-  return `<section class="maven-guide collection-section" aria-labelledby="maven-guide-title"><div class="section-heading"><div><h2 id="maven-guide-title">Compile &amp; run a lab</h2><p>Build the Java files, collect the dependencies, then run a class.</p></div></div><p>Install <strong>JDK 21</strong> and <strong>Maven 3</strong>. Open a terminal in the lab’s project folder containing <code>pom.xml</code>. The first build downloads the required dependencies.</p><div class="maven-command-block"><div class="maven-command-heading"><h3>macOS / Linux (Bash)</h3><button type="button" data-maven-copy="posix">Copy commands</button></div><pre><code data-maven-commands="posix">${escape(posixCommands)}</code></pre></div><details class="maven-powershell"><summary>Windows PowerShell commands</summary><p>Windows uses a semicolon between classpath entries. PowerShell reads the dependency list with <code>Get-Content</code>.</p><div class="maven-command-block"><div class="maven-command-heading"><h3>PowerShell</h3><button type="button" data-maven-copy="powershell">Copy commands</button></div><pre><code data-maven-commands="powershell">${escape(powershellCommands)}</code></pre></div></details><p class="maven-guide-note">This example runs <a href="#/lab/isp-keyagreement?file=src%2Fmain%2Fjava%2Fisp%2Fkeyagreement%2FAgentCommunicationECDH.java">AgentCommunicationECDH in Lab 4</a>. Replace the final class name to run another program in that project, and compile again after editing.</p><p class="maven-guide-note">For <a href="#/lab/isp-midterms-ab">Lab 6</a>, use <code>isp.signatures.MidtermA</code>, <code>isp.signatures.MidtermACommented</code>, <code>isp.signatures.MidtermB</code>, or <code>isp.signatures.MidtermBCommented</code> in the final command.</p></section>`;
+  return `<section class="maven-guide collection-section" aria-labelledby="maven-guide-title"><div class="section-heading"><div><h2 id="maven-guide-title">Compile &amp; run Lab 3</h2><p>Build the authenticated and public-key encryption project, then run an example.</p></div></div><p>Install <strong>JDK 21</strong> and <strong>Maven 3</strong>. Open a terminal in Lab 3’s <code>isp-ae-pke</code> project folder containing <code>pom.xml</code>. The first build downloads the required dependencies.</p><div class="maven-command-block"><div class="maven-command-heading"><h3>macOS / Linux (Bash)</h3><button type="button" data-maven-copy="posix">Copy commands</button></div><pre><code data-maven-commands="posix">${escape(posixCommands)}</code></pre></div><details class="maven-powershell"><summary>Windows PowerShell commands</summary><p>Windows uses a semicolon between classpath entries. PowerShell reads the dependency list with <code>Get-Content</code>.</p><div class="maven-command-block"><div class="maven-command-heading"><h3>PowerShell</h3><button type="button" data-maven-copy="powershell">Copy commands</button></div><pre><code data-maven-commands="powershell">${escape(powershellCommands)}</code></pre></div></details><p class="maven-guide-note">These commands run <a href="#/lab/isp-ae-pke?file=src%2Fmain%2Fjava%2Fisp%2FA1AgentCommunicationGCM.java">A1AgentCommunicationGCM in Lab 3</a>. To run another Lab 3 program, replace <code>isp.A1AgentCommunicationGCM</code> in the final command with a class below. Recompile after editing.</p><ul class="maven-programs">${programs.map(([name,description]) => `<li><a href="#/lab/isp-ae-pke?file=${encodeURIComponent(`src/main/java/isp/${name}.java`)}"><code>isp.${name}</code></a><span>${description}</span></li>`).join("")}</ul></section>`;
 }
 function home() {
   navigation("home"); setHeading("Overview", "Cryptography collection");
